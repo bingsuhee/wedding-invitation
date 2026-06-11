@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Plane, Gem, Sparkles, Camera, MapPin, Coffee } from 'lucide-react';
@@ -42,7 +43,7 @@ const TimelineItem = ({ event, index }) => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <span className="text-base text-wedding-accent mb-1 block">
+            <span className="text-base text-wedding-accent mb-1 block font-medium italic">
               {event.date}
             </span>
             <h4 className="text-lg font-bold text-gray-800 mb-2">
@@ -51,11 +52,11 @@ const TimelineItem = ({ event, index }) => {
 
             {event.image && (
               <div className="mb-3 inline-block">
-                <div className="bg-white p-2 shadow-md rotate-2 hover:rotate-[-2deg] transition-transform duration-300">
+                <div className={`bg-white p-2 shadow-md ${isEven ? 'rotate-2' : '-rotate-2'} hover:rotate-0 transition-transform duration-300 sketchy-border-subtle`}>
                   <img
                     src={`${import.meta.env.BASE_URL}${event.image}`}
                     alt={event.title}
-                    className="w-24 h-24 object-cover grayscale-[20%] sepia-[10%]"
+                    className="w-24 h-24 object-cover grayscale-[10%]"
                   />
                 </div>
               </div>
@@ -74,15 +75,15 @@ const TimelineItem = ({ event, index }) => {
 const Timeline = () => {
   return (
     <ScrollAnimationWrapper>
-      <section className="py-20 px-6 bg-white overflow-hidden">
+      <section className="py-20 px-6 bg-white overflow-hidden relative">
         <div className="text-center mb-16">
-          <h2 className="text-2xl text-wedding-accent mb-2">Love Story</h2>
-          <div className="w-12 h-px bg-wedding-accent/30 mx-auto" />
+          <h2 className="text-2xl text-wedding-accent mb-2 marker-highlight inline-block">Love Story</h2>
+          <div className="w-12 h-px bg-wedding-accent/30 mx-auto mt-2" />
         </div>
 
         <div className="relative max-w-lg mx-auto">
           {/* Continuous Vertical Line */}
-          <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-0 border-l border-dashed border-wedding-accent/60 z-0" />
+          <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-0 border-l-2 border-dashed border-wedding-accent/60 z-0" />
 
           <div className="relative z-10">
             {weddingInfo.timeline.map((event, index) => (

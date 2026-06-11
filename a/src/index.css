@@ -1,148 +1,221 @@
 @import "tailwindcss";
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
-@font-face {
-  font-family: 'Korean Font';
-  src: url('/fonts/NanumGaRamYeonGgoc.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-  /*unicode-range: U+AC00-D7A3, U+1100-11FF, U+3130-318F;*/
-}
-
-@font-face {
-  font-family: 'English Font';
-  src: url('/fonts/DancingScript-VariableFont_wght.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0041-005A, U+0061-007A;
-}
-
-@font-face {
-  font-family: 'Number Font';
-  src: url('/fonts/NanumGaRamYeonGgoc.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0030-0039;
-}
-
-
 @theme {
-  --font-base: sans-serif;
-  --font-korean: "Korean Font";
-  --font-english: "English Font";
-  --font-number: "Number Font";
-
-  --font-default: var(--font-number), var(--font-english), var(--font-korean), var(--font-base);
-
-  --color-wedding-bg: #fdfdfd;
-  --color-wedding-primary: #5b6467;
-  --color-wedding-accent: #D4AF37; /* Champagne Gold */
-}
-
-@utility font-default {
-  font-family: var(--font-default);
-}
-
-@utility paper-texture {
-  background-color: #fcfaf2;
-  position: relative;
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    opacity: 0.05;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  }
-}
-
-/* scrollbar-hide utility - keeping just in case but we want scrollbars now */
-@utility scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  --font-base: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --color-point: #000000;
+  --color-point-soft: #000000;
 }
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
   html {
     scroll-behavior: smooth;
+    background: #ece8e2;
   }
 
   body {
-    @apply bg-wedding-bg text-gray-800 text-lg break-keep;
-    font-family: var(--font-default);
-    overflow-y: auto;
+    margin: 0;
+    background: #ece8e2;
+    color: #000000;
+    font-family: var(--font-base);
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* Custom Scrollbar Styling */
-  ::-webkit-scrollbar {
-    width: 6px;
+  button,
+  input,
+  textarea {
+    font: inherit;
   }
 
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.3); /* wedding-accent with opacity */
-    border-radius: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(212, 175, 55, 0.5);
+  img,
+  video {
+    display: block;
+    max-width: 100%;
   }
 
   #root {
-    max-width: 480px;
-    margin: 0 auto;
     min-height: 100vh;
-    box-shadow: 0 0 30px rgba(0,0,0,0.03);
-    background: white;
-    position: relative;
+    background: #ece8e2;
   }
 }
 
-.guestbook-list {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  overscroll-behavior: contain;
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  background: #ece8e2;
+  overflow: hidden;
 }
-.guestbook-list::-webkit-scrollbar {
+
+.app-shell::before {
+  content: none;
+}
+
+.section-block {
+  display: flex;
+  flex-direction: column;
+  padding: 72px 24px;
+}
+
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(180deg, #dbe87f 0%, #dbe87f 40%, #ffffff 100%);
+  animation: intro-overlay-fade 3.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-text {
+  text-align: center;
+  color: #000000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: intro-fade 3.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  width: min(100%, 360px);
+}
+
+.intro-line {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.intro-line-primary {
+  letter-spacing: -0.05em;
+}
+
+.intro-line-secondary {
+  font-size: clamp(11px, 3.6vw, 14px);
+  line-height: 1.3;
+  letter-spacing: -0.04em;
+}
+
+.intro-name {
+  font-size: clamp(14px, 4.8vw, 19px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.05em;
+}
+
+.intro-amp {
+  margin: 0 10px;
+  font-size: clamp(13px, 4vw, 16px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.carousel-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(78%, 78%);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
   display: none;
 }
 
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.carousel-card {
+  overflow: hidden;
+  border: 1px solid rgba(17, 17, 17, 0.04);
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(32, 24, 16, 0.06);
+  scroll-snap-align: start;
 }
 
-.animate-fade-in {
-  animation: fade-in-up 1.2s ease-out forwards;
+.carousel-card img {
+  aspect-ratio: 4 / 5;
 }
 
-@keyframes wobble {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(-2deg); }
-  50% { transform: rotate(1deg); }
-  75% { transform: rotate(-1deg); }
-  100% { transform: rotate(0deg); }
+@keyframes intro-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.985);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  88% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.985);
+  }
 }
 
-.animate-wobble {
-  animation: wobble 0.5s ease-in-out infinite;
+@keyframes intro-overlay-fade {
+  0% {
+    opacity: 0;
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
+.soft-card {
+  border: 1px solid rgba(17, 17, 17, 0.04);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 34px rgba(35, 28, 20, 0.06);
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 4s ease-in-out infinite;
+.soft-card-strong {
+  border: 1px solid rgba(17, 17, 17, 0.05);
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(35, 28, 20, 0.08);
+}
+
+.soft-input {
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.soft-chip {
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 18px rgba(35, 28, 20, 0.05);
+}
+
+.point-text {
+  color: var(--color-point);
+}
+
+.point-text-soft {
+  color: var(--color-point-soft);
+}
+
+@media (min-width: 768px) {
+  .section-block {
+    padding: 88px 32px;
+  }
 }

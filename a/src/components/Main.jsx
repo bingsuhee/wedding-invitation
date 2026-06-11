@@ -57,7 +57,7 @@ const Main = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2, duration: 1.5 }}
-            className="text-4xl text-wedding-primary"
+            className="text-4xl text-wedding-primary marker-highlight inline-block"
           >
             Our Wedding
           </motion.h2>
@@ -69,7 +69,7 @@ const Main = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 2, delay: 0.2 }}
-        className="relative w-80 h-80 mb-10 flex items-center justify-center"
+        className="relative w-80 h-80 mb-10 flex items-center justify-center sketchy-border-subtle p-2"
       >
         {/* Watercolor Blobs */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-wedding-primary/20 blur-3xl rounded-full mix-blend-multiply animate-pulse-slow" />
@@ -91,7 +91,7 @@ const Main = () => {
 
         <div className="relative w-full h-full p-4 z-10">
           <img
-            src={`${import.meta.env.BASE_URL}images/main_hero_transparent.png`}
+            src={`${import.meta.env.BASE_URL}images/illust/main_cross.png`}
             alt="Wedding Hero"
             className="w-full h-full object-contain"
           />
@@ -130,12 +130,14 @@ const Main = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 1 }}
         >
-          <h1 className="text-4xl sm:text-5xl mb-1 text-gray-800 tracking-wide">
-            {weddingInfo.groom.name} <span className="text-2xl sm:text-3xl text-wedding-accent/70">&</span> {weddingInfo.bride.name}
+          <h1 className="text-4xl sm:text-5xl mb-1 text-gray-800 tracking-wide flex items-center justify-center gap-4">
+            <span className="marker-highlight">{weddingInfo.groom.name}</span>
+            <span className="text-2xl sm:text-3xl text-wedding-accent/70 italic">&</span>
+            <span className="marker-highlight">{weddingInfo.bride.name}</span>
           </h1>
-          <svg width="150" height="10" viewBox="0 0 150 10" className="mx-auto mb-4 opacity-30">
+          <svg width="180" height="15" viewBox="0 0 180 15" className="mx-auto mb-4 opacity-40">
             <motion.path
-              d="M 10 5 Q 75 8 140 5"
+              d="M 10 8 Q 90 12 170 8 M 15 11 Q 90 14 165 11"
               fill="transparent"
               stroke="#D4AF37"
               strokeWidth="2"

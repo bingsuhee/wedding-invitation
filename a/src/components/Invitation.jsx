@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { weddingInfo } from '../data/info';
-import { Phone, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
+import { Phone, ChevronDown, ChevronUp, Copy, Check, Star, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrollAnimationWrapper from './ScrollAnimationWrapper';
 
@@ -77,20 +77,39 @@ const AccountSection = ({ title, person, father, mother }) => {
 const Invitation = () => {
   return (
     <section className="w-full min-h-dvh flex items-center justify-center py-20 overflow-hidden">
-      <ScrollAnimationWrapper amount={0.4} className="w-full max-w-sm">
-        <div className="mx-auto bg-white pt-10 px-10 pb-10 rounded-2xl shadow-sm border border-gray-100 text-center">
-          <h3 className="text-xl mb-12 text-wedding-accent font-bold">소중한 분들을 초대합니다</h3>
-          <p className="text-gray-600 leading-[2.2] mb-16 whitespace-pre-line text-lg px-2">
-            {weddingInfo.message}
+      <ScrollAnimationWrapper amount={0.4} className="w-full max-w-sm px-6">
+        <div className="mx-auto bg-white pt-10 px-8 pb-10 sketchy-border-subtle text-center shadow-sm relative">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-wedding-accent/10 -rotate-2 mask-sketch opacity-50" style={{ maskImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
+
+          <div className="flex flex-col items-center justify-center">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Star size={16} className="text-wedding-accent/40 animate-pulse" />
+              <h3 className="text-xl text-wedding-accent font-bold marker-highlight inline-block">소중한 분들을 초대합니다</h3>
+              <Heart size={16} className="text-wedding-accent/40 animate-pulse" fill="currentColor" />
+            </div>
+            <img
+              src={`${import.meta.env.BASE_URL}images/illust/main_cake.png`}
+              alt="Wedding Cake"
+              className="w-80 h-48 object-contain"
+            />
+          </div>
+          <p className="text-gray-600 leading-[2.2] mb-16 whitespace-pre-line text-lg px-2 relative">
+            <span className="relative z-10">{weddingInfo.message}</span>
+            {/* Hand-drawn decorative quote marks or similar could go here */}
           </p>
 
-          <div className="space-y-8 text-gray-700 mb-16">
+          <div className="space-y-8 text-gray-700 mb-16 relative">
+            {/* Sketchy separator */}
+            <svg width="100%" height="20" viewBox="0 0 300 20" className="absolute -top-8 left-0 opacity-20">
+              <path d="M 10 10 Q 150 15 290 10 M 20 13 Q 150 18 280 13" fill="none" stroke="currentColor" strokeWidth="1" />
+            </svg>
+
             <div className="flex flex-col gap-2">
-              <span className="text-base text-wedding-accent/70 uppercase tracking-widest">Groom</span>
+              <span className="text-base text-wedding-accent/70 uppercase tracking-widest font-medium">Groom</span>
               <div className="flex items-center justify-center gap-3">
                 <span className="text-base text-gray-500">{weddingInfo.groom.father.name} · {weddingInfo.groom.mother.name}</span>
                 <span className="text-sm text-gray-300">의 장남</span>
-                <span className="text-lg font-bold">{weddingInfo.groom.name}</span>
+                <span className="text-lg font-bold marker-highlight">{weddingInfo.groom.name}</span>
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -98,12 +117,12 @@ const Invitation = () => {
               <div className="flex items-center justify-center gap-3">
                 <span className="text-base text-gray-500">{weddingInfo.bride.father.name} · {weddingInfo.bride.mother.name}</span>
                 <span className="text-sm text-gray-300">의 장녀</span>
-                <span className="text-lg font-bold">{weddingInfo.bride.name}</span>
+                <span className="text-lg font-bold marker-highlight">{weddingInfo.bride.name}</span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <AccountSection
               title="신랑측"
               person={weddingInfo.groom}
@@ -121,13 +140,13 @@ const Invitation = () => {
           <div className="mt-16 flex justify-center gap-3">
             <a
               href={`tel:${weddingInfo.groom.contact}`}
-              className="flex flex-1 items-center justify-center gap-2 px-4 py-3 rounded-full border border-wedding-accent/30 text-wedding-accent text-sm font-bold transition hover:bg-wedding-accent hover:text-white uppercase tracking-tighter"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white doodle-border text-wedding-accent text-sm font-bold transition hover:bg-gray-50 uppercase tracking-tighter"
             >
               <Phone size={12} /> 신랑 연락하기
             </a>
             <a
               href={`tel:${weddingInfo.bride.contact}`}
-              className="flex flex-1 items-center justify-center gap-2 px-4 py-3 rounded-full border border-wedding-accent/30 text-wedding-accent text-sm font-bold transition hover:bg-wedding-accent hover:text-white uppercase tracking-tighter"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white doodle-border text-wedding-accent text-sm font-bold transition hover:bg-gray-50 uppercase tracking-tighter"
             >
               <Phone size={12} /> 신부 연락하기
             </a>
