@@ -11,10 +11,12 @@ const concept = process.env.CONCEPT || 'a'
 export default defineConfig({
   plugins: [react()],
   base: './',
-  root: resolve(__dirname, concept),
   publicDir: resolve(__dirname, concept, 'public'),
   build: {
     outDir: resolve(__dirname, 'dist', concept),
     emptyOutDir: true,
+    rollupOptions: {
+      input: resolve(__dirname, concept, 'index.html'),
+    },
   },
 })
