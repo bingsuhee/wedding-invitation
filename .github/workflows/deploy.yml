@@ -7,12 +7,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 jobs:
   build-and-deploy:
@@ -24,7 +22,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: 'npm'
 
       - name: Install dependencies
@@ -32,6 +30,7 @@ jobs:
 
       - name: Build all concepts
         run: |
+          set -e
           EXCLUDE="node_modules dist .github"
           for dir in */; do
             dir="${dir%/}"
@@ -48,14 +47,8 @@ jobs:
       - name: Copy redirect page
         run: cp redirect.html dist/index.html
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: './dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
