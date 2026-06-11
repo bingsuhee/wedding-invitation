@@ -26,18 +26,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build all concepts
-        run: |
-          set -e
-          EXCLUDE="node_modules dist .github"
-          for dir in */; do
-            dir="${dir%/}"
-            if [ -f "$dir/index.html" ] && ! echo "$EXCLUDE" | grep -wq "$dir"; then
-              echo "Building concept: $dir"
-              CONCEPT="$dir" npm run build
-            fi
-          done
+      - name: Build
+        run: npm run build
         env:
+          CONCEPT: a
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_NAVER_CLIENT_ID: ${{ secrets.VITE_NAVER_CLIENT_ID }}
