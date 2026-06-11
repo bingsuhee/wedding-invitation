@@ -1,0 +1,148 @@
+@import "tailwindcss";
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+@font-face {
+  font-family: 'Korean Font';
+  src: url('/fonts/NanumGaRamYeonGgoc.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  /*unicode-range: U+AC00-D7A3, U+1100-11FF, U+3130-318F;*/
+}
+
+@font-face {
+  font-family: 'English Font';
+  src: url('/fonts/DancingScript-VariableFont_wght.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0041-005A, U+0061-007A;
+}
+
+@font-face {
+  font-family: 'Number Font';
+  src: url('/fonts/NanumGaRamYeonGgoc.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0030-0039;
+}
+
+
+@theme {
+  --font-base: sans-serif;
+  --font-korean: "Korean Font";
+  --font-english: "English Font";
+  --font-number: "Number Font";
+
+  --font-default: var(--font-number), var(--font-english), var(--font-korean), var(--font-base);
+
+  --color-wedding-bg: #fdfdfd;
+  --color-wedding-primary: #5b6467;
+  --color-wedding-accent: #D4AF37; /* Champagne Gold */
+}
+
+@utility font-default {
+  font-family: var(--font-default);
+}
+
+@utility paper-texture {
+  background-color: #fcfaf2;
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+}
+
+/* scrollbar-hide utility - keeping just in case but we want scrollbars now */
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-wedding-bg text-gray-800 text-lg break-keep;
+    font-family: var(--font-default);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Custom Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.3); /* wedding-accent with opacity */
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.5);
+  }
+
+  #root {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    box-shadow: 0 0 30px rgba(0,0,0,0.03);
+    background: white;
+    position: relative;
+  }
+}
+
+.guestbook-list {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+}
+.guestbook-list::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in-up 1.2s ease-out forwards;
+}
+
+@keyframes wobble {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-2deg); }
+  50% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-wobble {
+  animation: wobble 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
