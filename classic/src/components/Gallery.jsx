@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gallery as PhotoGallery, Item } from 'react-photoswipe-gallery';
 import 'photoswipe/dist/photoswipe.css';
-import { weddingInfo } from '../data/info';
+import { weddingInfo } from '@shared/data/info';
 import ScrollAnimationWrapper from './ScrollAnimationWrapper';
 
 const PolaroidImage = ({ image, index }) => {

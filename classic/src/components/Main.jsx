@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import { motion } from 'framer-motion';
-import { weddingInfo } from '../data/info';
+import { weddingInfo } from '@shared/data/info';
 import { Star, Heart } from 'lucide-react';
 
 const Main = () => {

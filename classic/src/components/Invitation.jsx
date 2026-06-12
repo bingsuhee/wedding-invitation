@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import { weddingInfo } from '../data/info';
+import { weddingInfo } from '@shared/data/info';
 import { Phone, ChevronDown, ChevronUp, Copy, Check, Star, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrollAnimationWrapper from './ScrollAnimationWrapper';

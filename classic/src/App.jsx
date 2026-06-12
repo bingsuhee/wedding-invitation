@@ -3,7 +3,7 @@ import { Copy, Check, X } from 'lucide-react';
 import Guestbook from './components/Guestbook';
 import Map from './components/Map';
 import ScrollAnimationWrapper from './components/ScrollAnimationWrapper';
-import { weddingInfo } from './data/info';
+import { weddingInfo } from '@shared/data/info';
 
 const INTRO_PRIMARY_TEXT = '박수빈&김소희';
 const INTRO_SECONDARY_TEXT = '저희의 결혼식에 초대드립니다.';

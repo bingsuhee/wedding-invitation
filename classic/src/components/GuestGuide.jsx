@@ -1,5 +1,5 @@
 import React from 'react';
-import { weddingInfo } from '../data/info';
+import { weddingInfo } from '@shared/data/info';
 import { MapPin, Info, Star } from 'lucide-react';
 import ScrollAnimationWrapper from './ScrollAnimationWrapper';
 

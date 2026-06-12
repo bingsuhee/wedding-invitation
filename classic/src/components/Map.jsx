@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bus, CarFront, TrainFront } from 'lucide-react';
 import { Map as KakaoMap, MapMarker } from 'react-kakao-maps-sdk';
-import { weddingInfo } from '../data/info';
+import { weddingInfo } from '@shared/data/info';
 
 const Map = () => {
   const { lat, lng, name, address, naverUrl, kakaoUrl } = weddingInfo.location;

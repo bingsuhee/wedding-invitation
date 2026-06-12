@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Plane, Gem, Sparkles, Camera, MapPin, Coffee } from 'lucide-react';
-import { weddingInfo } from '../data/info';
+import { weddingInfo } from '@shared/data/info';
 import ScrollAnimationWrapper from './ScrollAnimationWrapper';
 
 const ICON_MAP = {
