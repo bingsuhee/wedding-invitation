@@ -6,7 +6,7 @@
     const p = new URLSearchParams(window.location.search);
 
     // 새 컨셉 추가 시 아래에 조건 한 줄 추가
-    // if (p.get('concept') === 'b') { window.location.replace('./b/'); return; }
+    if (p.get('concept') === 'envelope') { window.location.replace('./envelope/'); return; }
 
     window.location.replace('./classic/');
   </script>
