@@ -22,10 +22,7 @@
 wedding-invitation/
 ├── <concept>/                  # 컨셉 디렉토리 (예: classic, b 등)
 │   ├── index.html              # HTML 엔트리 (Kakao Maps SDK 스크립트 포함)
-│   ├── public/
-│   │   ├── images/             # 갤러리, 러브스토리, 일러스트, 장소 사진
-│   │   ├── fonts/              # 로컬 폰트 파일
-│   │   └── videos/             # 인트로 영상
+│   ├── public/                 # 컨셉 고유 정적 파일 (공통 에셋은 shared/public/ 사용)
 │   └── src/
 │       ├── App.jsx             # 메인 컴포넌트 (대부분의 섹션 포함)
 │       ├── main.jsx            # React 렌더링 엔트리
@@ -33,13 +30,17 @@ wedding-invitation/
 │       ├── lib/
 │       │   └── supabaseClient.js
 │       └── components/
-│           ├── Guestbook.jsx   # 방명록 (Supabase 연동)
+│           ├── Guestbook.jsx   # 방명록 (Supabase 연동, 페이지 크기 10)
 │           ├── Map.jsx         # 지도 + 대중교통 안내
 │           ├── ScrollAnimationWrapper.jsx
 │           └── ...             # 기타 컴포넌트
 ├── shared/
-│   └── data/
-│       └── info.js             # 웨딩 데이터 — 모든 컨셉 공통 사용 (@shared alias)
+│   ├── data/
+│   │   └── info.js             # 웨딩 데이터 — 모든 컨셉 공통 사용 (@shared alias)
+│   └── public/                 # 모든 컨셉 공통 정적 에셋 (vite.config.js publicDir)
+│       ├── images/             # 갤러리, 러브스토리, 일러스트, 장소 사진
+│       ├── fonts/              # 로컬 폰트 파일
+│       └── videos/             # 인트로 영상
 ├── .github/workflows/
 │   └── deploy.yml              # GitHub Pages 자동 배포 (main 브랜치 push 시 트리거)
 ├── vite.config.js              # 멀티 컨셉 빌드 설정 (@shared alias 포함)

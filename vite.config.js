@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   root: resolve(__dirname, concept),
-  publicDir: resolve(__dirname, concept, 'public'),
+  publicDir: resolve(__dirname, 'shared', 'public'),
   resolve: {
     alias: {
       '@shared': resolve(__dirname, 'shared'),
