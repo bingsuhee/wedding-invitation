@@ -2,33 +2,49 @@ import React, { useEffect, useState } from 'react';
 import { MessageSquare, Send, User } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
+const PAGE_SIZE = 10;
+
 const Guestbook = () => {
   const [messages, setMessages] = useState([]);
   const [name, setName] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchedOffset, setFetchedOffset] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    fetchMessages();
+    fetchMessages(0, false);
   }, []);
 
-  const fetchMessages = async () => {
-    setFetching(true);
+  const fetchMessages = async (offset, append) => {
+    if (!append) setFetching(true);
+    else setLoadingMore(true);
 
     try {
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from('guestbook')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(offset, offset + PAGE_SIZE - 1);
 
       if (error) throw error;
-      setMessages(data || []);
+
+      const fetched = data || [];
+      setMessages((prev) => (append ? [...prev, ...fetched] : fetched));
+      setFetchedOffset(offset + fetched.length);
+      setTotalCount(count ?? 0);
     } catch (error) {
       console.error('Error fetching guestbook:', error.message);
     } finally {
       setFetching(false);
+      setLoadingMore(false);
     }
+  };
+
+  const handleLoadMore = () => {
+    fetchMessages(fetchedOffset, true);
   };
 
   const handleSubmit = async (event) => {
@@ -48,6 +64,7 @@ const Guestbook = () => {
 
       if (data) {
         setMessages((prev) => [data, ...prev]);
+        setTotalCount((prev) => prev + 1);
       }
 
       setName('');
@@ -59,6 +76,8 @@ const Guestbook = () => {
       setLoading(false);
     }
   };
+
+  const hasMore = fetchedOffset < totalCount;
 
   return (
     <section className="section-block gap-8">
@@ -108,29 +127,37 @@ const Guestbook = () => {
             로딩 중...
           </div>
         ) : messages.length > 0 ? (
-          messages.map((message) => (
-            <article
-              key={message.id}
-              className="soft-card-strong px-5 py-5"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-black/50">
-                    <User size={16} />
-                  </div>
-                  <div>
-                    <p className="text-[14px] font-medium text-black">{message.name}</p>
-                    <p className="text-xs text-black/35">
-                      {new Date(message.created_at).toLocaleDateString()}
-                    </p>
+          <>
+            {messages.map((message) => (
+              <article key={message.id} className="soft-card-strong px-5 py-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-black/50">
+                      <User size={16} />
+                    </div>
+                    <div>
+                      <p className="text-[14px] font-medium text-black">{message.name}</p>
+                      <p className="text-xs text-black/35">
+                        {new Date(message.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <p className="mt-4 whitespace-pre-wrap text-[13px] leading-relaxed text-black/70">
-                {message.content}
-              </p>
-            </article>
-          ))
+                <p className="mt-4 whitespace-pre-wrap text-[13px] leading-relaxed text-black/70">
+                  {message.content}
+                </p>
+              </article>
+            ))}
+            {hasMore && (
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="w-full rounded-full border border-black/15 bg-white py-3 text-[13px] text-black/50 transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loadingMore ? '불러오는 중...' : `더 보기 (${totalCount - fetchedOffset}개 남음)`}
+              </button>
+            )}
+          </>
         ) : (
           <div className="soft-card px-5 py-10 text-center text-black/45">
             <MessageSquare size={28} className="mx-auto mb-3 opacity-40" />
