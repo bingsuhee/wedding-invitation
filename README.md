@@ -59,7 +59,6 @@ wedding-invitation/
 VITE_SUPABASE_URL=        # Supabase 프로젝트 URL
 VITE_SUPABASE_ANON_KEY=   # Supabase anon key
 VITE_KAKAO_MAP_KEY=       # Kakao Developers 앱 키 (JavaScript 키)
-VITE_NAVER_CLIENT_ID=     # 네이버 지도 클라이언트 ID (현재 미사용)
 ```
 
 GitHub Actions 배포 시에는 Repository Secrets에 동일한 이름으로 등록되어 있어야 한다.
