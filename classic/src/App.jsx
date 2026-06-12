@@ -4,6 +4,7 @@ import Guestbook from './components/Guestbook';
 import Map from './components/Map';
 import ScrollAnimationWrapper from './components/ScrollAnimationWrapper';
 import { weddingInfo } from '@shared/data/info';
+import { supabase } from './lib/supabaseClient';
 
 const INTRO_PRIMARY_TEXT = '박수빈&김소희';
 const INTRO_SECONDARY_TEXT = '저희의 결혼식에 초대드립니다.';
@@ -241,6 +242,7 @@ function App() {
   const [attendanceName, setAttendanceName] = useState('');
   const [attendanceMeal, setAttendanceMeal] = useState('');
   const [attendanceConsent, setAttendanceConsent] = useState(false);
+  const [attendanceLoading, setAttendanceLoading] = useState(false);
   const [countdown, setCountdown] = useState({
     days: '000',
     hours: '00',
@@ -401,6 +403,32 @@ function App() {
     attendanceStatus &&
     attendanceName.trim() &&
     attendanceConsent;
+
+  const handleAttendanceSubmit = async () => {
+    if (!canSubmitAttendance || attendanceLoading) return;
+    setAttendanceLoading(true);
+    try {
+      const { error } = await supabase.from('rsvp').insert([{
+        name: attendanceName.trim(),
+        side: attendanceSide,
+        status: attendanceStatus,
+        meal: attendanceMeal || null,
+      }]);
+      if (error) throw error;
+      window.alert('참석 의사가 전달되었습니다.');
+      setAttendanceModalOpen(false);
+      setAttendanceSide('');
+      setAttendanceStatus('');
+      setAttendanceName('');
+      setAttendanceMeal('');
+      setAttendanceConsent(false);
+    } catch (error) {
+      console.error('Error submitting RSVP:', error.message);
+      window.alert('전달에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setAttendanceLoading(false);
+    }
+  };
   const infoTabContent =
     infoTab === 'bride-room'
       ? {
@@ -570,14 +598,11 @@ function App() {
 
             <button
               type="button"
-              disabled={!canSubmitAttendance}
-              onClick={() => {
-                window.alert('참석 의사가 전달되었습니다.');
-                setAttendanceModalOpen(false);
-              }}
+              disabled={!canSubmitAttendance || attendanceLoading}
+              onClick={handleAttendanceSubmit}
               className="mt-4 inline-flex w-full items-center justify-center rounded-[14px] bg-[#cfcfcf] px-5 py-3.5 text-[17px] font-semibold text-white transition enabled:bg-[#cdbdaf] enabled:shadow-[0_10px_24px_rgba(161,133,108,0.22)] disabled:cursor-not-allowed"
             >
-              전달하기
+              {attendanceLoading ? '전달 중...' : '전달하기'}
             </button>
           </div>
         </div>
