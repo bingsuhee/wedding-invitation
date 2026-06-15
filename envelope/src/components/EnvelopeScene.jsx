@@ -1,118 +1,129 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const WaxSeal = () => (
-  <div
-    className="w-11 h-11 rounded-full flex items-center justify-center"
-    style={{
-      background: 'radial-gradient(circle at 35% 35%, #a84040, #6b2020)',
-      boxShadow: '0 2px 8px rgba(107,32,32,0.45), inset 0 1px 2px rgba(255,255,255,0.15)',
-    }}
-  >
-    <span className="font-dancing text-white text-[18px] font-bold leading-none select-none" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-      W
-    </span>
+  <div className="env-seal-wrapper" aria-hidden="true">
+    <div className="seal-disc" />
+    <div className="seal-monogram">♥</div>
   </div>
 );
 
 const EnvelopeScene = ({ onOpen }) => {
-  const [flapOpen, setFlapOpen] = useState(false);
-  const [exiting, setExiting] = useState(false);
+  const [phase, setPhase] = useState('sealed');
 
   const handleTap = () => {
-    if (flapOpen) return;
-    setFlapOpen(true);
+    if (phase !== 'sealed') return;
+    setPhase('opening');
+    setTimeout(() => setPhase('rising'), 820);
     setTimeout(() => {
-      setExiting(true);
-      setTimeout(onOpen, 380);
-    }, 1050);
+      setPhase('open');
+      setTimeout(onOpen, 420);
+    }, 2100);
   };
+
+  const isOpening = phase === 'opening' || phase === 'rising' || phase === 'open';
+  const isFloating = phase === 'sealed';
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer select-none"
-      style={{ background: '#f0e8db' }}
+      className="env-stage"
       onClick={handleTap}
-      animate={exiting ? { opacity: 0, scale: 0.97 } : { opacity: 1, scale: 1 }}
-      transition={{ duration: 0.38, ease: 'easeInOut' }}
+      animate={phase === 'open' ? { opacity: 0, scale: 0.97 } : { opacity: 1, scale: 1 }}
+      transition={{ duration: 0.42, ease: 'easeInOut' }}
     >
-      {/* Subtle grain texture overlay */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
-        }}
-      />
+      {/* paper-grain desk */}
+      <div className="env-desk" style={{ opacity: phase === 'open' ? 0 : 1, transition: 'opacity 0.7s ease 0.5s' }} />
 
-      {/* Envelope wrapper */}
-      <div className="relative" style={{ width: 300, height: 200 }}>
-
-        {/* ── Envelope body ── */}
-        <div
-          className="absolute inset-0 rounded-sm"
-          style={{ background: '#e8d4b8', boxShadow: '0 24px 64px rgba(0,0,0,0.13), 0 4px 14px rgba(0,0,0,0.08)' }}
-        >
-          {/* Left fold */}
-          <div className="absolute inset-0 rounded-sm" style={{ clipPath: 'polygon(0 0, 0 100%, 52% 52%)', background: '#dfc9ae' }} />
-          {/* Right fold */}
-          <div className="absolute inset-0 rounded-sm" style={{ clipPath: 'polygon(100% 0, 100% 100%, 48% 52%)', background: '#dfc9ae' }} />
-          {/* Bottom fold */}
-          <div className="absolute inset-0 rounded-sm" style={{ clipPath: 'polygon(0 100%, 100% 100%, 50% 52%)', background: '#c9a87a' }} />
-        </div>
-
-        {/* ── Letter card (slides up on open) ── */}
-        <motion.div
-          className="absolute left-[10px] right-[10px] rounded-sm overflow-hidden"
-          style={{ bottom: 8, height: 162, background: '#fdf9f4', zIndex: 8, boxShadow: '0 -2px 12px rgba(0,0,0,0.07)' }}
-          animate={flapOpen ? { y: -165 } : { y: 0 }}
-          transition={{ delay: 0.32, duration: 0.88, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          <div className="flex flex-col items-center justify-center h-full gap-1.5 pb-4">
-            <p className="text-[8px] tracking-[0.35em] uppercase" style={{ color: '#b07d64' }}>청첩장</p>
-            <p className="font-dancing text-[19px]" style={{ color: '#3d2010' }}>We invite you to</p>
-            <p className="font-dancing text-[19px]" style={{ color: '#3d2010' }}>our wedding</p>
-          </div>
-        </motion.div>
-
-        {/* ── Flap (3-D rotateX from top edge) ── */}
-        <div
-          className="absolute top-0 left-0 w-full"
-          style={{ height: 108, zIndex: 10, perspective: '1200px' }}
-        >
+      {/* hint text */}
+      <AnimatePresence>
+        {phase === 'sealed' && (
           <motion.div
-            className="w-full h-full"
-            style={{ transformOrigin: 'top center' }}
-            animate={flapOpen ? { rotateX: -174 } : { rotateX: 0 }}
-            transition={{ duration: 0.72, ease: [0.4, 0, 0.2, 1] }}
+            className="env-hint"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {/* Flap triangle */}
-            <div
-              className="w-full h-full"
-              style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', background: '#e2cda8' }}
-            />
-            {/* Wax seal – centered on flap */}
-            <motion.div
-              className="absolute"
-              style={{ bottom: 8, left: '50%', transform: 'translateX(-50%)' }}
-              animate={flapOpen ? { opacity: 0, scale: 1.4 } : { opacity: 1, scale: 1 }}
-              transition={{ duration: 0.18 }}
-            >
-              <WaxSeal />
-            </motion.div>
+            <span className="env-hint-script">Wedding Invitation</span>
+            탭하여 열어보세요
           </motion.div>
-        </div>
-      </div>
+        )}
+      </AnimatePresence>
 
-      {/* Hint text */}
-      <motion.p
-        className="mt-10 text-[10px] tracking-[0.35em] uppercase"
-        style={{ color: '#8b6b4a' }}
-        animate={flapOpen ? { opacity: 0 } : { opacity: [0.45, 1, 0.45] }}
-        transition={flapOpen ? {} : { duration: 2.2, repeat: Infinity }}
+      {/* envelope */}
+      <motion.div
+        className="envelope-wrap"
+        animate={phase === 'open' ? { opacity: 0, y: 26, scale: 0.97 } : { opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: 'easeInOut', delay: phase === 'open' ? 0 : 0 }}
+        style={{ pointerEvents: phase === 'open' ? 'none' : 'auto' }}
       >
-        탭하여 열어보세요
-      </motion.p>
+        <div className="env-shadow" />
+
+        {/* floating wrapper */}
+        <motion.div
+          style={{ position: 'absolute', inset: 0 }}
+          animate={isFloating ? { y: [0, -7, 0] } : { y: 0 }}
+          transition={isFloating ? { duration: 5.5, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.3 }}
+        >
+          {/* back panel */}
+          <div className="env-back" />
+
+          {/* letter preview (rises when opening) */}
+          <motion.div
+            className="env-letter-preview"
+            animate={phase === 'rising' || phase === 'open' ? { y: -160 } : { y: 0 }}
+            transition={{ delay: 0.32, duration: 0.88, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <span className="preview-label">청첩장</span>
+            <span className="preview-script">We invite you to</span>
+            <span className="preview-script">our wedding</span>
+          </motion.div>
+
+          {/* front V-pocket */}
+          <div className="env-front" />
+
+          {/* flap container */}
+          <div className="env-flap-container">
+            <motion.div
+              className="env-flap-inner"
+              animate={isOpening ? { rotateX: -174 } : { rotateX: 0 }}
+              transition={{ duration: 0.72, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <div className="env-flap-face" />
+            </motion.div>
+          </div>
+
+          {/* wax seal */}
+          <motion.div
+            animate={
+              phase === 'opening'
+                ? { scale: [1, 1.08, 0.7], rotate: [0, -4, 8], opacity: [1, 1, 0] }
+                : (phase === 'rising' || phase === 'open')
+                ? { opacity: 0 }
+                : { scale: 1, rotate: 0, opacity: 1 }
+            }
+            transition={{ duration: 0.5 }}
+            style={{ position: 'absolute', inset: 0 }}
+          >
+            <WaxSeal />
+          </motion.div>
+        </motion.div>
+      </motion.div>
+
+      {/* scroll cue after open */}
+      <AnimatePresence>
+        {phase === 'rising' && (
+          <motion.div
+            className="scroll-cue-wrap"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.7, y: [0, 6, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <span>잠시 후 편지가 열립니다</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

@@ -16,6 +16,11 @@ export const weddingInfo = {
   date: '2026년 10월 11일 일요일 낮 12시',
   dateLabel: '2026.10.11 (일)',
   timeLabel: '12:00',
+  year: 2026,
+  month: 10,
+  day: 11,
+  hour: 12,
+  minute: 0,
   location: {
     name: 'JK아트컨벤션 아트리움홀',
     address: '서울 영등포구 문래로 164 SK리더스뷰 4층',
