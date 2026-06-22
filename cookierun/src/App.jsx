@@ -34,20 +34,10 @@ function SectionTitle({ children, bold = false }) {
   );
 }
 
-function SectionHeading({ title, subtitle, bold = true }) {
+function SectionHeading({ title, bold = true }) {
   return (
     <div className="text-center">
-      <div className="mb-4 flex items-center justify-center gap-3">
-        <span className="h-px w-10 bg-black/14" />
-        <span className="inline-flex items-center justify-center">
-          <span className="h-2 w-2 rotate-45 border border-black/28 bg-white" />
-        </span>
-        <span className="h-px w-10 bg-black/14" />
-      </div>
       <SectionTitle bold={bold}>{title}</SectionTitle>
-      {subtitle ? (
-        <p className="mt-2 text-[11px] uppercase tracking-[0.28em] text-black/35">{subtitle}</p>
-      ) : null}
     </div>
   );
 }
@@ -109,7 +99,7 @@ function AccountAccordion({ title, people }) {
 function LoveStoryTimeline({ items }) {
   return (
     <section className="section-block gap-8">
-      <SectionHeading title="우리의 이야기" subtitle="LOVE STORY" />
+      <SectionHeading title="우리의 이야기" />
       <div className="story-book-list mx-auto w-full max-w-[390px]">
         {items.slice(0, 3).map((item) => (
             <article
@@ -187,7 +177,7 @@ function GalleryGrid({ images }) {
 
   return (
     <section className="section-block gap-8">
-      <SectionHeading title="갤러리" subtitle="GALLERY" />
+      <SectionHeading title="갤러리" />
       <div className="gallery-viewer mx-auto w-full max-w-[390px]">
         <figure className="gallery-stage">
           <img
@@ -692,7 +682,7 @@ function App() {
 
           <ScrollAnimationWrapper amount={0.18} delay={0.04}>
             <section className="section-block gap-8">
-              <SectionHeading title="우리의 소개" subtitle="OUR INTRODUCTION" />
+              <SectionHeading title="우리의 소개" />
               <div className="space-y-6">
                 <article className="soft-card grid grid-cols-[110px_1fr] gap-4 p-4">
                   <div className="aspect-square">
@@ -754,15 +744,13 @@ function App() {
 
           <ScrollAnimationWrapper amount={0.18}>
             <section className="section-block gap-8">
-              <SectionHeading title="예식 안내" subtitle="CEREMONY INFO" />
+              <SectionHeading title="예식 안내" />
               <p className="text-center text-[13px] leading-[1.8] text-black/55">
                 <span className="point-text text-[17px] font-semibold tracking-[-0.03em]">
                   {weddingInfo.location.name}
                 </span>
                 <br />
-                {weddingInfo.dateLabel}
-                <br />
-                {weddingInfo.timeLabel}
+                {weddingInfo.dateLabel} {weddingInfo.timeLabel}
               </p>
               <CalendarBlock />
               <div className="text-center">
@@ -800,7 +788,7 @@ function App() {
 
           <ScrollAnimationWrapper amount={0.18}>
             <section className="section-block gap-8">
-              <SectionHeading title="안내사항" subtitle="INFORMATION" />
+              <SectionHeading title="안내사항" />
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
@@ -879,7 +867,7 @@ function App() {
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper amount={0.14}>
             <section className="section-block gap-6">
-              <SectionHeading title="마음 전하실 곳" subtitle="SEND YOUR HEART" />
+              <SectionHeading title="마음 전하실 곳" />
               <p className="text-center text-[13px] leading-[1.8] text-black/55">
                 비대면으로 축하를 전하고자
                 <br />
@@ -928,7 +916,7 @@ function App() {
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper amount={0.12}>
             <section className="section-block gap-6 text-center">
-              <SectionHeading title="참석 의사 전달" subtitle="RSVP" />
+              <SectionHeading title="참석 의사 전달" />
               <p className="text-[13px] leading-[1.8] text-black/55">
                 축하의 마음으로 참석해주시는
                 <br />

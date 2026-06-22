@@ -63,17 +63,9 @@ const Guestbook = () => {
   return (
     <section className="section-block gap-8">
       <div className="text-center">
-        <div className="mb-4 flex items-center justify-center gap-3">
-          <span className="h-px w-10 bg-black/14" />
-          <span className="inline-flex items-center justify-center">
-            <span className="h-2 w-2 rotate-45 border border-black/28 bg-white" />
-          </span>
-          <span className="h-px w-10 bg-black/14" />
-        </div>
-        <h2 className="point-text text-[22px] font-semibold leading-[1.2] tracking-[-0.04em]">
-          방명록
+        <h2 className="point-text paint-title-heading text-[22px] font-semibold leading-[1.2] tracking-[-0.04em]">
+          <span className="paint-title">방명록</span>
         </h2>
-        <p className="mt-2 text-[11px] uppercase tracking-[0.28em] text-black/35">GUESTBOOK</p>
       </div>
 
       <form onSubmit={handleSubmit} className="soft-card-strong space-y-4 p-6">

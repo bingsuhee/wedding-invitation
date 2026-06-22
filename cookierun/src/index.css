@@ -14,12 +14,12 @@
 
   html {
     scroll-behavior: smooth;
-    background: #ece8e2;
+    background: #fcf5e6;
   }
 
   body {
     margin: 0;
-    background: #ece8e2;
+    background: #fcf5e6;
     color: #000000;
     font-family: var(--font-base);
     overflow-x: hidden;
@@ -40,14 +40,14 @@
 
   #root {
     min-height: 100vh;
-    background: #ece8e2;
+    background: #fcf5e6;
   }
 }
 
 .app-shell {
   position: relative;
   min-height: 100vh;
-  background: #ece8e2;
+  background: #fcf5e6;
   overflow: hidden;
 }
 
@@ -281,7 +281,7 @@
 
 .story-book-question {
   color: #000;
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 800;
   line-height: 1.35;
 }
@@ -417,7 +417,7 @@
 }
 
 .party-complete-label {
-  margin: 0 auto 4px;
+  margin: 0 auto 18px;
   padding: 0.38em 1.02em 0.34em;
   font-size: clamp(16px, 4.7vw, 21px);
   font-weight: 700;
