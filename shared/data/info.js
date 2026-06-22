@@ -1,6 +1,10 @@
 export const weddingInfo = {
   groom: {
     name: '박수빈',
+    profile: {
+      birthDate: '1993년 9월 9일',
+      tags: ['#ESTP', '#강하늘닮은꼴', '#실상은바보', '#빙수'],
+    },
     father: { name: '박경수', account: '국민은행 111-222-333' },
     mother: { name: '신정미', account: '우리은행 444-555-666' },
     account: '국민은행 123-456-789',
@@ -8,6 +12,10 @@ export const weddingInfo = {
   },
   bride: {
     name: '김소희',
+    profile: {
+      birthDate: '1994년 10월 31일',
+      tags: ['#ISTP', '#얼굴은얄라리', '#성격은박명수', '#땃지'],
+    },
     father: { name: '김종범', account: '신한은행 777-888-999' },
     mother: { name: '송해란', account: '하나은행 000-111-222' },
     account: '신한은행 987-654-321',
