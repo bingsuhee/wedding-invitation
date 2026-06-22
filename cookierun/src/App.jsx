@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Copy, Check, X } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, Copy, Check, X } from 'lucide-react';
 import Guestbook from './components/Guestbook';
 import Map from './components/Map';
 import ScrollAnimationWrapper from './components/ScrollAnimationWrapper';
@@ -25,11 +25,11 @@ const coupleLabel = `${weddingInfo.groom.name} ${weddingInfo.bride.name}`;
 function SectionTitle({ children, bold = false }) {
   return (
     <h2
-      className={`point-text text-[22px] leading-[1.2] tracking-[-0.04em] ${
+      className={`point-text paint-title-heading text-[22px] leading-[1.2] tracking-[-0.04em] ${
         bold ? 'font-semibold' : 'font-normal'
       }`}
     >
-      {children}
+      <span className="paint-title">{children}</span>
     </h2>
   );
 }
@@ -110,71 +110,129 @@ function LoveStoryTimeline({ items }) {
   return (
     <section className="section-block gap-8">
       <SectionHeading title="우리의 이야기" subtitle="LOVE STORY" />
-      <div className="mx-auto w-full max-w-[360px]">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        {items.map((item, index) => {
-          const dateMatch = item.date.match(/(\d{4})년\s*(\d{1,2})월/);
-          const formattedDate = dateMatch
-            ? `${dateMatch[1]}.${String(dateMatch[2]).padStart(2, '0')}`
-            : item.date;
-          const isLeftColumn = index % 2 === 0;
-          const tiltClass = isLeftColumn ? 'rotate-[2.2deg]' : '-rotate-[2.2deg]';
-          const offsetClass =
-            index === 0
-              ? '-translate-y-1 -translate-x-1'
-              : index === 1
-                ? 'translate-y-4 translate-x-1'
-                : index === 2
-                  ? '-translate-y-1 -translate-x-1.5'
-                  : index === 3
-                    ? 'translate-y-3 translate-x-1.5'
-                    : 'translate-y-1 -translate-x-1';
-
-          return (
+      <div className="story-book-list mx-auto w-full max-w-[390px]">
+        {items.slice(0, 3).map((item) => (
             <article
               key={`${item.date}-${item.title}`}
-              className={`relative border border-black/8 bg-white p-2.5 pb-4 shadow-[0_14px_30px_rgba(35,28,20,0.08)] ${tiltClass} ${offsetClass}`}
+              className="story-book-page"
             >
-              <span className="absolute left-1/2 top-[-11px] h-6 w-16 -translate-x-1/2 rotate-[4deg] bg-[#e8dcc8]/90 shadow-sm" />
+              <h3 className="story-book-question">Q. {item.question}</h3>
               <img
                 src={`${import.meta.env.BASE_URL}${item.image}`}
                 alt={item.title}
-                className="aspect-square w-full object-cover"
+                className="story-book-image"
                 loading="lazy"
               />
-              <div className="space-y-2 px-1.5 pt-3 text-center">
-                <p className="text-[10px] tracking-[0.16em] text-black/32">{formattedDate}</p>
-                <p className="text-[12px] leading-[1.75] tracking-[-0.02em] text-black/68">{item.description}</p>
+              <div className="story-book-answer-group">
+                <div className="story-book-answer">
+                  <p className="story-book-speaker">{groomGivenName}</p>
+                  <p>{item.groomAnswer}</p>
+                </div>
+                <div className="story-book-answer">
+                  <p className="story-book-speaker">{brideGivenName}</p>
+                  <p>{item.brideAnswer}</p>
+                </div>
               </div>
             </article>
-          );
-        })}
-        </div>
+          ))}
       </div>
     </section>
   );
 }
 
-function GalleryGrid({ images, onSelect }) {
+function GalleryGrid({ images }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const thumbRowRef = useRef(null);
+  const galleryItems = images.slice(0, 9);
+  const currentImage = galleryItems[currentIndex] ?? galleryItems[0];
+
+  useEffect(() => {
+    const row = thumbRowRef.current;
+    const activeThumb = row?.children[currentIndex];
+
+    if (!row || !activeThumb) {
+      return;
+    }
+
+    const rowRect = row.getBoundingClientRect();
+    const thumbRect = activeThumb.getBoundingClientRect();
+
+    if (thumbRect.right > rowRect.right) {
+      row.scrollTo({
+        left: row.scrollLeft + thumbRect.right - rowRect.right,
+        behavior: 'smooth',
+      });
+      return;
+    }
+
+    if (thumbRect.left < rowRect.left) {
+      row.scrollTo({
+        left: row.scrollLeft - (rowRect.left - thumbRect.left),
+        behavior: 'smooth',
+      });
+    }
+  }, [currentIndex]);
+
+  const goToPrevious = () => {
+    setCurrentIndex((index) => (index === 0 ? galleryItems.length - 1 : index - 1));
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((index) => (index === galleryItems.length - 1 ? 0 : index + 1));
+  };
+
+  if (!currentImage) {
+    return null;
+  }
+
   return (
     <section className="section-block gap-8">
       <SectionHeading title="갤러리" subtitle="GALLERY" />
-      <div className="grid grid-cols-3 gap-2">
-        {images.slice(0, 9).map((image) => (
+      <div className="gallery-viewer mx-auto w-full max-w-[390px]">
+        <figure className="gallery-stage">
+          <img
+            src={`${import.meta.env.BASE_URL}${currentImage.src}`}
+            alt={currentImage.caption}
+            className="gallery-stage-image"
+            loading="lazy"
+          />
           <button
-            key={image.src}
             type="button"
-            onClick={() => onSelect(image)}
-            className="overflow-hidden bg-[#f3f3f3]"
+            onClick={goToPrevious}
+            className="gallery-nav-button left-3"
+            aria-label="이전 사진"
           >
-            <img
-              src={`${import.meta.env.BASE_URL}${image.src}`}
-              alt={image.caption}
-              className="aspect-square h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
-              loading="lazy"
-            />
+            <ChevronLeft size={20} />
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={goToNext}
+            className="gallery-nav-button right-3"
+            aria-label="다음 사진"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </figure>
+        <div ref={thumbRowRef} className="gallery-thumb-row" aria-label="갤러리 썸네일">
+          {galleryItems.map((image, index) => (
+            <button
+              key={image.src}
+              type="button"
+              onClick={() => setCurrentIndex(index)}
+              className={`gallery-thumb ${index === currentIndex ? 'is-active' : ''}`}
+              aria-label={`${index + 1}번째 사진 보기`}
+              aria-current={index === currentIndex ? 'true' : undefined}
+            >
+              <img
+                src={`${import.meta.env.BASE_URL}${image.src}`}
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </button>
+          ))}
+        </div>
+        <p className="gallery-counter">{String(currentIndex + 1).padStart(2, '0')} / {String(galleryItems.length).padStart(2, '0')}</p>
       </div>
     </section>
   );
@@ -258,7 +316,6 @@ function App() {
   });
   const [remainingDaysText, setRemainingDaysText] = useState('000일');
   const [introDotFrame, setIntroDotFrame] = useState(0);
-  const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
 
   const loveStoryItems = weddingInfo.loveStory;
   const galleryImages = weddingInfo.gallery;
@@ -552,33 +609,6 @@ function App() {
           </div>
         </div>
       ) : null}
-      {selectedGalleryImage ? (
-        <div
-          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/88 p-5"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setSelectedGalleryImage(null)}
-        >
-          <button
-            type="button"
-            onClick={() => setSelectedGalleryImage(null)}
-            className="absolute right-5 top-5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white"
-            aria-label="닫기"
-          >
-            <X size={18} />
-          </button>
-          <figure className="max-w-[420px]" onClick={(event) => event.stopPropagation()}>
-            <img
-              src={`${import.meta.env.BASE_URL}${selectedGalleryImage.src}`}
-              alt={selectedGalleryImage.caption}
-              className="max-h-[78vh] w-full object-contain"
-            />
-            <figcaption className="mt-4 text-center text-[13px] text-white/75">
-              {selectedGalleryImage.caption}
-            </figcaption>
-          </figure>
-        </div>
-      ) : null}
       {introVisible && (
         <div className="intro-overlay">
           <div className="intro-content">
@@ -612,6 +642,7 @@ function App() {
               </div>
 
               <div className="space-y-2 px-6 text-center">
+                <p className="party-complete-label">파티 모집 완료! 이제부터 같은 팀입니다.</p>
                 <div className="space-y-2">
                   <p className="point-text text-[18px] leading-tight tracking-[-0.04em]">
                     {groomGivenName}이와 {brideGivenName}의
@@ -764,7 +795,7 @@ function App() {
             <LoveStoryTimeline items={loveStoryItems} />
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper amount={0.16}>
-            <GalleryGrid images={galleryImages} onSelect={setSelectedGalleryImage} />
+            <GalleryGrid images={galleryImages} />
           </ScrollAnimationWrapper>
 
           <ScrollAnimationWrapper amount={0.18}>
