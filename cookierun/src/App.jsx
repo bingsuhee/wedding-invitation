@@ -4,6 +4,7 @@ import Guestbook from './components/Guestbook';
 import Map from './components/Map';
 import ScrollAnimationWrapper from './components/ScrollAnimationWrapper';
 import { weddingInfo } from '@shared/data/info';
+import { supabase } from './lib/supabaseClient';
 
 const INTRO_DURATION_MS = 2000;
 const INTRO_DOT_INTERVAL_MS = INTRO_DURATION_MS / 9;
@@ -507,6 +508,7 @@ function App() {
   const [attendanceCompanionCount, setAttendanceCompanionCount] = useState('');
   const [attendanceNote, setAttendanceNote] = useState('');
   const [attendanceConsent, setAttendanceConsent] = useState(false);
+  const [attendanceLoading, setAttendanceLoading] = useState(false);
   const [countdown, setCountdown] = useState({
     days: '000',
     hours: '00',
@@ -674,10 +676,28 @@ function App() {
     setAttendanceModalOpen(false);
   };
 
-  const handleAttendanceSubmit = () => {
-    window.alert('참석 의사가 전달되었습니다.');
-    resetAttendanceForm();
-    closeAttendanceSheet();
+  const handleAttendanceSubmit = async () => {
+    setAttendanceLoading(true);
+    try {
+      const { error } = await supabase.from('rsvp').insert([
+        {
+          name: attendanceName.trim(),
+          side: attendanceSide,
+          status: attendanceStatus,
+          meal: attendanceMeal,
+          companion_count: attendanceCompanionCount === '' ? null : Number(attendanceCompanionCount),
+          note: attendanceNote.trim() || null,
+        },
+      ]);
+      if (error) throw error;
+      window.alert('참석 의사가 전달되었습니다. 감사합니다!');
+      resetAttendanceForm();
+      closeAttendanceSheet();
+    } catch {
+      window.alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setAttendanceLoading(false);
+    }
   };
 
   const infoTabContent =
@@ -864,11 +884,11 @@ function App() {
 
             <button
               type="button"
-              disabled={!canSubmitAttendance}
+              disabled={!canSubmitAttendance || attendanceLoading}
               onClick={handleAttendanceSubmit}
               className="attendance-submit-button mt-5"
             >
-              전달
+              {attendanceLoading ? '전달 중...' : '전달'}
             </button>
           </div>
         </div>
