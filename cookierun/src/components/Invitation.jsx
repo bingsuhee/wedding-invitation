@@ -108,7 +108,7 @@ const Invitation = () => {
               <span className="text-base text-wedding-accent/70 uppercase tracking-widest font-medium">Groom</span>
               <div className="flex items-center justify-center gap-3">
                 <span className="text-base text-gray-500">{weddingInfo.groom.father.name} · {weddingInfo.groom.mother.name}</span>
-                <span className="text-sm text-gray-300">의 장남</span>
+                <span className="text-sm text-gray-300">의 아들</span>
                 <span className="text-lg font-bold marker-highlight">{weddingInfo.groom.name}</span>
               </div>
             </div>
@@ -116,7 +116,7 @@ const Invitation = () => {
               <span className="text-base text-wedding-accent/70 uppercase tracking-widest">Bride</span>
               <div className="flex items-center justify-center gap-3">
                 <span className="text-base text-gray-500">{weddingInfo.bride.father.name} · {weddingInfo.bride.mother.name}</span>
-                <span className="text-sm text-gray-300">의 장녀</span>
+                <span className="text-sm text-gray-300">의 딸</span>
                 <span className="text-lg font-bold marker-highlight">{weddingInfo.bride.name}</span>
               </div>
             </div>

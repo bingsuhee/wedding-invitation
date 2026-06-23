@@ -18,7 +18,12 @@ const CEREMONY_DATE = new Date(
   weddingInfo.minute,
   0
 );
-const HERO_IMAGE = `${import.meta.env.BASE_URL}images/hero-top.jpg`;
+const HERO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-hero.png`;
+const GROOM_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-groom.png`;
+const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
+const HERO_SCRIPT_DATE = '2026.10.11';
+const HERO_SCRIPT_TITLE = 'Our Wedding Day';
+const HERO_SCRIPT_TOTAL_LENGTH = HERO_SCRIPT_DATE.length + HERO_SCRIPT_TITLE.length;
 const groomGivenName = weddingInfo.groom.name.slice(1);
 const brideGivenName = weddingInfo.bride.name.slice(1);
 const coupleLabel = `${weddingInfo.groom.name} ${weddingInfo.bride.name}`;
@@ -517,6 +522,7 @@ function App() {
   });
   const [remainingDaysText, setRemainingDaysText] = useState('000일');
   const [introDotFrame, setIntroDotFrame] = useState(0);
+  const [heroScriptCount, setHeroScriptCount] = useState(0);
 
   const loveStoryItems = weddingInfo.loveStory;
   const galleryImages = weddingInfo.gallery;
@@ -654,7 +660,34 @@ function App() {
     };
   }, [attendanceModalOpen]);
 
+  useEffect(() => {
+    if (introVisible) {
+      setHeroScriptCount(0);
+      return undefined;
+    }
+
+    const typeInterval = window.setInterval(() => {
+      setHeroScriptCount((count) => {
+        if (count >= HERO_SCRIPT_TOTAL_LENGTH) {
+          window.clearInterval(typeInterval);
+          return count;
+        }
+
+        return count + 1;
+      });
+    }, 85);
+
+    return () => {
+      window.clearInterval(typeInterval);
+    };
+  }, [introVisible]);
+
   const introDots = '.'.repeat(INTRO_DOT_SEQUENCE[introDotFrame]);
+  const typedHeroDate = HERO_SCRIPT_DATE.slice(0, Math.min(heroScriptCount, HERO_SCRIPT_DATE.length));
+  const typedHeroTitle = HERO_SCRIPT_TITLE.slice(
+    0,
+    Math.max(0, heroScriptCount - HERO_SCRIPT_DATE.length)
+  );
   const canSubmitAttendance =
     attendanceSide &&
     attendanceStatus &&
@@ -916,13 +949,20 @@ function App() {
         <main className="mx-auto flex w-full max-w-[480px] flex-col bg-transparent">
           <ScrollAnimationWrapper amount={0.08} duration={0.9}>
             <section className="flex flex-col gap-5">
-              <div className="overflow-hidden bg-black">
+              <div className="hero-bleed overflow-hidden bg-black">
                 <div className="relative aspect-[4/6]">
                   <img
                     className="h-full w-full object-cover object-top"
                     src={HERO_IMAGE}
                     alt={`${coupleLabel} 웨딩 메인 이미지`}
                   />
+                  <div
+                    className="hero-script-overlay"
+                    aria-label={`${HERO_SCRIPT_DATE} ${HERO_SCRIPT_TITLE}`}
+                  >
+                    <p className="hero-script-date">{typedHeroDate}</p>
+                    <p className="hero-script-title">{typedHeroTitle}</p>
+                  </div>
                 </div>
               </div>
 
@@ -978,27 +1018,27 @@ function App() {
                 <div className="intro-person-column">
                   <div className="intro-portrait-frame">
                     <img
-                      src={`${import.meta.env.BASE_URL}${weddingInfo.gallery[1].src}`}
-                      alt={`신부 ${weddingInfo.bride.name}`}
+                      src={GROOM_INTRO_IMAGE}
+                      alt={`신랑 ${weddingInfo.groom.name}`}
                       className="intro-portrait-image"
                     />
                   </div>
                   <article className="intro-profile-card">
                     <div className="flex items-center gap-2">
                       <span className="soft-chip inline-block px-2 py-0.5 text-[11px] font-medium tracking-[0.16em] text-black/55">
-                        신부
+                        신랑
                       </span>
-                      <p className="point-text text-[24px] font-medium tracking-[-0.04em]">{brideGivenName}</p>
+                      <p className="point-text text-[24px] font-medium tracking-[-0.04em]">{groomGivenName}</p>
                     </div>
                     <span className="intro-profile-divider" aria-hidden="true" />
                     <p className="text-[13px] leading-relaxed text-black/55">
                       <span className="font-semibold text-black/72">
-                        {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}
-                      </span>의 장녀
+                        {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}
+                      </span>의 아들
                     </p>
                     <div className="intro-profile-meta">
-                      <p className="intro-birthdate-text">{weddingInfo.bride.profile.birthDate}</p>
-                      <HashtagLines tags={weddingInfo.bride.profile.tags} />
+                      <p className="intro-birthdate-text">{weddingInfo.groom.profile.birthDate}</p>
+                      <HashtagLines tags={weddingInfo.groom.profile.tags} />
                     </div>
                   </article>
                 </div>
@@ -1007,25 +1047,25 @@ function App() {
                   <article className="intro-profile-card intro-profile-card-right">
                     <div className="flex items-center justify-end gap-2">
                       <span className="soft-chip inline-block px-2 py-0.5 text-[11px] font-medium tracking-[0.16em] text-black/55">
-                        신랑
+                        신부
                       </span>
-                      <p className="point-text text-[24px] font-medium tracking-[-0.04em]">{groomGivenName}</p>
+                      <p className="point-text text-[24px] font-medium tracking-[-0.04em]">{brideGivenName}</p>
                     </div>
                     <span className="intro-profile-divider intro-profile-divider-right" aria-hidden="true" />
                     <p className="text-[13px] leading-relaxed text-black/55">
                       <span className="font-semibold text-black/72">
-                        {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}
-                      </span>의 장남
+                        {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}
+                      </span>의 딸
                     </p>
                     <div className="intro-profile-meta">
-                      <p className="intro-birthdate-text">{weddingInfo.groom.profile.birthDate}</p>
-                      <HashtagLines tags={weddingInfo.groom.profile.tags} align="right" />
+                      <p className="intro-birthdate-text">{weddingInfo.bride.profile.birthDate}</p>
+                      <HashtagLines tags={weddingInfo.bride.profile.tags} align="right" />
                     </div>
                   </article>
                   <div className="intro-portrait-frame">
                     <img
-                      src={`${import.meta.env.BASE_URL}${weddingInfo.gallery[0].src}`}
-                      alt={`신랑 ${weddingInfo.groom.name}`}
+                      src={BRIDE_INTRO_IMAGE}
+                      alt={`신부 ${weddingInfo.bride.name}`}
                       className="intro-portrait-image"
                     />
                   </div>
@@ -1043,7 +1083,7 @@ function App() {
                     <p className="text-[13px] leading-relaxed text-black/55">
                       <span className="font-semibold text-black/72">
                         {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}
-                      </span>의 장남
+                      </span>의 아들
                     </p>
                     <div className="flex items-center gap-2">
                       <span className="soft-chip inline-block px-2 py-0.5 text-[11px] font-medium tracking-[0.16em] text-black/55">
@@ -1063,7 +1103,7 @@ function App() {
                     <p className="text-[13px] leading-relaxed text-black/55">
                       <span className="font-semibold text-black/72">
                         {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}
-                      </span>의 장녀
+                      </span>의 딸
                     </p>
                     <div className="flex items-center justify-end gap-2">
                       <span className="soft-chip inline-block px-2 py-0.5 text-[11px] font-medium tracking-[0.16em] text-black/55">
@@ -1096,6 +1136,43 @@ function App() {
             <GalleryGrid images={galleryImages} />
           </ScrollAnimationWrapper>
 
+          <ScrollAnimationWrapper amount={0.18}>
+            <section className="section-block section-with-lead gap-8">
+              <SectionHeading title="예식 안내" />
+              <p className="section-lead">
+                <span className="section-lead-title">
+                  {weddingInfo.location.name}
+                </span>
+                <br />
+                {weddingInfo.dateLabel} {weddingInfo.timeLabel}
+              </p>
+              <CalendarBlock />
+              <div className="text-center">
+                <p className="point-text text-[14px]">
+                  {groomGivenName} ♥ {brideGivenName} 결혼식까지 <span className="font-semibold">{remainingDaysText}</span> 남았습니다.
+                </p>
+                <div className="soft-card-strong mt-3 flex items-center justify-center gap-2 px-5 py-4">
+                  {[
+                    { label: 'Days', value: countdown.days },
+                    { label: 'Hour', value: countdown.hours },
+                    { label: 'Min', value: countdown.minutes },
+                    { label: 'Sec', value: countdown.seconds },
+                  ].map((item, index, array) => (
+                    <React.Fragment key={item.label}>
+                      <div className="min-w-[58px] text-center">
+                        <p className="point-text text-[23px] font-semibold tracking-[-0.06em]">{item.value}</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-black/45">{item.label}</p>
+                      </div>
+                      {index < array.length - 1 ? (
+                        <span className="point-text -mt-4 text-[20px] font-semibold leading-none">:</span>
+                      ) : null}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </ScrollAnimationWrapper>
+
           <ScrollAnimationWrapper amount={0.16}>
             <Map />
           </ScrollAnimationWrapper>
@@ -1103,9 +1180,9 @@ function App() {
           <ScrollAnimationWrapper amount={0.18}>
             <section className="section-block gap-8">
               <SectionHeading title="안내사항" />
-              <div className="soft-card overflow-hidden">
+              <div className="info-panel">
                 <div
-                  className="grid grid-cols-2 gap-0 border-b border-black/8 bg-[#f8f6ef]"
+                  className="info-tab-shell grid grid-cols-2 gap-0"
                   role="tablist"
                   aria-label="안내사항 탭"
                 >
@@ -1131,13 +1208,13 @@ function App() {
                   </button>
                 </div>
 
-                <figure id="info-tab-panel" role="tabpanel">
+                <figure id="info-tab-panel" className="info-tab-panel" role="tabpanel">
                   <img
                     src={infoTabContent.image}
                     alt={infoTabContent.alt}
-                    className="aspect-auto w-full object-contain"
+                    className="info-panel-image aspect-auto w-full object-contain"
                   />
-                  <figcaption className="space-y-4 px-5 py-5 text-left text-[13px] leading-[1.8] text-black/68">
+                  <figcaption className="info-panel-caption space-y-4 px-1 pt-5 text-left text-[13px] leading-[1.8] text-black/68">
                     {infoTab === 'bride-room' ? (
                       <div className="space-y-3">
                         <p>신부대기실은 4층 계단으로 올라오시면 됩니다.</p>

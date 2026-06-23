@@ -9,16 +9,16 @@ const Map = () => {
     'soft-chip map-link-button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3 text-[13px] text-black';
 
   return (
-    <section className="section-block gap-8">
+    <section className="section-block section-with-lead gap-8">
       <div className="text-center">
         <h2 className="point-text paint-title-heading text-[22px] font-semibold leading-[1.2] tracking-[-0.04em]">
           <span className="paint-title">오시는 길</span>
         </h2>
       </div>
 
-      <div className="space-y-3 text-center">
-        <p className="text-[17px] font-medium tracking-[-0.03em] text-black">{name}</p>
-        <p className="text-[13px] leading-relaxed text-black/65">
+      <div className="section-lead">
+        <p className="section-lead-title">{name}</p>
+        <p>
           {address}
         </p>
       </div>
