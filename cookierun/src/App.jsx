@@ -21,6 +21,24 @@ const HERO_IMAGE = `${import.meta.env.BASE_URL}images/hero-top.jpg`;
 const groomGivenName = weddingInfo.groom.name.slice(1);
 const brideGivenName = weddingInfo.bride.name.slice(1);
 const coupleLabel = `${weddingInfo.groom.name} ${weddingInfo.bride.name}`;
+const HERO_MESSAGE_BLOCKS = [
+  { text: '긴 여정 끝에 최고의 파티원을 만났습니다.' },
+  { text: '인생의 솔로 플레이를 마치고,\n이제는 둘이 함께 새로운 퀘스트에 도전합니다.' },
+  { text: '*퀘스트: 행복하고 예쁘게 살기 (진행 중)', bold: true },
+  { text: '저희의 새로운 모험이 시작되는 날을 함께 응원해 주세요.' },
+];
+
+function HashtagLines({ tags, align = 'left' }) {
+  const firstLine = tags.slice(0, 2).join(' ');
+  const secondLine = tags.slice(2).join(' ');
+
+  return (
+    <div className={`intro-hashtag-lines ${align === 'right' ? 'is-right' : ''}`}>
+      <p>{firstLine}</p>
+      <p>{secondLine}</p>
+    </div>
+  );
+}
 
 function SectionTitle({ children, bold = false }) {
   return (
@@ -147,7 +165,7 @@ function GalleryGrid({ images }) {
     width: 0,
     dragging: false,
   });
-  const galleryItems = images.slice(0, 9);
+  const galleryItems = images.filter(Boolean);
   const currentImage = galleryItems[currentIndex] ?? galleryItems[0];
   const getWrappedIndex = (index) => {
     if (galleryItems.length === 0) {
@@ -356,7 +374,7 @@ function GalleryGrid({ images }) {
         >
           <div
             className={`gallery-stage-track ${transitionEnabled ? 'is-animated' : ''}`}
-            style={{ transform: `translateX(calc(-100% + ${swipeOffset}px))` }}
+            style={{ transform: `translateX(calc(-33.333333% + ${swipeOffset}px))` }}
             onTransitionEnd={handleTrackTransitionEnd}
           >
             {stageImages.map((image, index) => (
@@ -909,12 +927,17 @@ function App() {
 
           <ScrollAnimationWrapper amount={0.2}>
             <section className="section-block pt-0 text-center">
-              <div className="text-[16px] leading-[1.75] tracking-[-0.03em] text-black">
-                <p>긴 여정 끝에 최고의 파티원을 만났습니다.</p>
-                <p>인생의 솔로 플레이를 마치고,</p>
-                <p>이제는 둘이 함께 새로운 퀘스트에 도전합니다.</p>
-                <p>*퀘스트: 행복하고 예쁘게 살기 (진행 중)</p>
-                <p>저희의 새로운 모험이 시작되는 날을 함께 응원해 주세요.</p>
+              <div className="hero-message-block text-[16px] leading-[1.75] tracking-[-0.03em] text-black">
+                {HERO_MESSAGE_BLOCKS.map((line) => (
+                  <p key={line.text} className={line.bold ? 'font-bold' : ''}>
+                    {line.text.split('\n').map((segment, index) => (
+                      <React.Fragment key={`${line.text}-${segment}`}>
+                        {index > 0 ? <br /> : null}
+                        {segment}
+                      </React.Fragment>
+                    ))}
+                  </p>
+                ))}
               </div>
               <div className="mt-6 flex justify-center">
                 <button
@@ -953,9 +976,9 @@ function App() {
                         {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}
                       </span>의 장녀
                     </p>
-                    <div className="text-[13px] leading-[1.8] text-black/45">
-                      <p>{weddingInfo.bride.profile.birthDate}</p>
-                      <p>{weddingInfo.bride.profile.tags.join(' ')}</p>
+                    <div className="intro-profile-meta">
+                      <p className="intro-birthdate-text">{weddingInfo.bride.profile.birthDate}</p>
+                      <HashtagLines tags={weddingInfo.bride.profile.tags} />
                     </div>
                   </article>
                 </div>
@@ -974,9 +997,9 @@ function App() {
                         {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}
                       </span>의 장남
                     </p>
-                    <div className="text-[13px] leading-[1.8] text-black/45">
-                      <p>{weddingInfo.groom.profile.birthDate}</p>
-                      <p>{weddingInfo.groom.profile.tags.join(' ')}</p>
+                    <div className="intro-profile-meta">
+                      <p className="intro-birthdate-text">{weddingInfo.groom.profile.birthDate}</p>
+                      <HashtagLines tags={weddingInfo.groom.profile.tags} align="right" />
                     </div>
                   </article>
                   <div className="intro-portrait-frame">
