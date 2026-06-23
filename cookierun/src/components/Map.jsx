@@ -4,8 +4,9 @@ import { Map as KakaoMap, MapMarker } from 'react-kakao-maps-sdk';
 import { weddingInfo } from '@shared/data/info';
 
 const Map = () => {
-  const { lat, lng, name, address, naverUrl, kakaoUrl } = weddingInfo.location;
-  const tmapUrl = `tmap://?rGoName=${encodeURIComponent(name)}&rGoY=${lat}&rGoX=${lng}`;
+  const { lat, lng, name, address, tmapUrl, naverUrl, kakaoUrl } = weddingInfo.location;
+  const mapButtonClassName =
+    'soft-chip map-link-button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3 text-[13px] text-black';
 
   return (
     <section className="section-block gap-8">
@@ -34,7 +35,7 @@ const Map = () => {
         <button
           type="button"
           onClick={() => window.open(tmapUrl, '_blank', 'noopener,noreferrer')}
-          className="soft-chip inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3 text-[13px] text-black transition hover:bg-black hover:text-white"
+          className={mapButtonClassName}
         >
           <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0A43FF] text-[10px] font-bold text-white">T</span>
           티맵
@@ -42,7 +43,7 @@ const Map = () => {
         <button
           type="button"
           onClick={() => window.open(naverUrl, '_blank', 'noopener,noreferrer')}
-          className="soft-chip inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3 text-[13px] text-black transition hover:bg-black hover:text-white"
+          className={mapButtonClassName}
         >
           <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#03C75A] text-[10px] font-bold text-white">N</span>
           네이버지도
@@ -50,7 +51,7 @@ const Map = () => {
         <button
           type="button"
           onClick={() => window.open(kakaoUrl, '_blank', 'noopener,noreferrer')}
-          className="soft-chip inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3 text-[13px] text-black transition hover:bg-black hover:text-white"
+          className={mapButtonClassName}
         >
           <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FEE500] text-[10px] font-bold text-[#3C1E1E]">K</span>
           카카오맵

@@ -132,9 +132,31 @@ function LoveStoryTimeline({ items }) {
 
 function GalleryGrid({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [transitionEnabled, setTransitionEnabled] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [pendingDirection, setPendingDirection] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const thumbRowRef = useRef(null);
+  const stageRef = useRef(null);
+  const dragStateRef = useRef({
+    active: false,
+    pointerId: null,
+    startX: 0,
+    deltaX: 0,
+    width: 0,
+    dragging: false,
+  });
   const galleryItems = images.slice(0, 9);
   const currentImage = galleryItems[currentIndex] ?? galleryItems[0];
+  const getWrappedIndex = (index) => {
+    if (galleryItems.length === 0) {
+      return 0;
+    }
+
+    return (index + galleryItems.length) % galleryItems.length;
+  };
+  const stageImages = [-1, 0, 1].map((offset) => galleryItems[getWrappedIndex(currentIndex + offset)]);
 
   useEffect(() => {
     const row = thumbRowRef.current;
@@ -164,11 +186,153 @@ function GalleryGrid({ images }) {
   }, [currentIndex]);
 
   const goToPrevious = () => {
-    setCurrentIndex((index) => (index === 0 ? galleryItems.length - 1 : index - 1));
+    if (galleryItems.length <= 1 || isAnimating) {
+      return;
+    }
+
+    const width = stageRef.current?.offsetWidth ?? 0;
+    if (!width) {
+      setCurrentIndex((index) => getWrappedIndex(index - 1));
+      return;
+    }
+
+    setIsAnimating(true);
+    setPendingDirection(-1);
+    setTransitionEnabled(true);
+    setSwipeOffset(width);
   };
 
   const goToNext = () => {
-    setCurrentIndex((index) => (index === galleryItems.length - 1 ? 0 : index + 1));
+    if (galleryItems.length <= 1 || isAnimating) {
+      return;
+    }
+
+    const width = stageRef.current?.offsetWidth ?? 0;
+    if (!width) {
+      setCurrentIndex((index) => getWrappedIndex(index + 1));
+      return;
+    }
+
+    setIsAnimating(true);
+    setPendingDirection(1);
+    setTransitionEnabled(true);
+    setSwipeOffset(-width);
+  };
+
+  const resetDragState = () => {
+    dragStateRef.current = {
+      active: false,
+      pointerId: null,
+      startX: 0,
+      deltaX: 0,
+      width: 0,
+      dragging: false,
+    };
+    setIsDragging(false);
+  };
+
+  const handlePointerDown = (event) => {
+    if (galleryItems.length <= 1 || isAnimating || event.target.closest('button')) {
+      return;
+    }
+
+    setTransitionEnabled(false);
+    setSwipeOffset(0);
+    dragStateRef.current = {
+      active: true,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      deltaX: 0,
+      width: stageRef.current?.offsetWidth ?? 0,
+      dragging: false,
+    };
+
+    if (stageRef.current) {
+      stageRef.current.setPointerCapture?.(event.pointerId);
+    }
+  };
+
+  const handlePointerMove = (event) => {
+    const dragState = dragStateRef.current;
+
+    if (!dragState.active || dragState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - dragState.startX;
+
+    if (!dragState.dragging && Math.abs(deltaX) > 10) {
+      dragState.dragging = true;
+      setIsDragging(true);
+    }
+
+    if (!dragState.dragging) {
+      return;
+    }
+
+    dragState.deltaX = deltaX;
+    setSwipeOffset(deltaX);
+  };
+
+  const completeSwipe = (pointerId) => {
+    const dragState = dragStateRef.current;
+
+    if (!dragState.active || dragState.pointerId !== pointerId) {
+      return;
+    }
+
+    const width = dragState.width || stageRef.current?.offsetWidth || 1;
+    const swipeThreshold = Math.min(90, width * 0.18);
+
+    if (Math.abs(dragState.deltaX) >= swipeThreshold) {
+      if (dragState.deltaX < 0) {
+        goToNext();
+      } else {
+        goToPrevious();
+      }
+    } else {
+      setTransitionEnabled(true);
+      setSwipeOffset(0);
+    }
+
+    resetDragState();
+  };
+
+  const handlePointerUp = (event) => {
+    completeSwipe(event.pointerId);
+  };
+
+  const handlePointerCancel = (event) => {
+    completeSwipe(event.pointerId);
+  };
+
+  const handleStageKeyDown = (event) => {
+    if (isAnimating) {
+      return;
+    }
+
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      goToPrevious();
+    }
+
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      goToNext();
+    }
+  };
+
+  const handleTrackTransitionEnd = () => {
+    if (pendingDirection === 0) {
+      setTransitionEnabled(false);
+      return;
+    }
+
+    setTransitionEnabled(false);
+    setCurrentIndex((index) => getWrappedIndex(index + pendingDirection));
+    setSwipeOffset(0);
+    setPendingDirection(0);
+    setIsAnimating(false);
   };
 
   if (!currentImage) {
@@ -179,13 +343,38 @@ function GalleryGrid({ images }) {
     <section className="section-block gap-8">
       <SectionHeading title="갤러리" />
       <div className="gallery-viewer mx-auto w-full max-w-[390px]">
-        <figure className="gallery-stage">
-          <img
-            src={`${import.meta.env.BASE_URL}${currentImage.src}`}
-            alt={currentImage.caption}
-            className="gallery-stage-image"
-            loading="lazy"
-          />
+        <figure
+          ref={stageRef}
+          className={`gallery-stage ${isDragging ? 'is-dragging' : ''}`}
+          tabIndex={0}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          onPointerLeave={handlePointerUp}
+          onKeyDown={handleStageKeyDown}
+        >
+          <div
+            className={`gallery-stage-track ${transitionEnabled ? 'is-animated' : ''}`}
+            style={{ transform: `translateX(calc(-100% + ${swipeOffset}px))` }}
+            onTransitionEnd={handleTrackTransitionEnd}
+          >
+            {stageImages.map((image, index) => (
+              <div
+                key={`${image.src}-${index}`}
+                className="gallery-stage-slide"
+                aria-hidden={index !== 1}
+              >
+                <img
+                  src={`${import.meta.env.BASE_URL}${image.src}`}
+                  alt={index === 1 ? currentImage.caption : ''}
+                  className="gallery-stage-image"
+                  loading="lazy"
+                  draggable="false"
+                />
+              </div>
+            ))}
+          </div>
           <button
             type="button"
             onClick={goToPrevious}
@@ -259,7 +448,7 @@ function CalendarBlock() {
       </div>
 
       <div className="grid grid-cols-7 gap-2 text-center text-[11px] text-black/45">
-        {['월', '화', '수', '목', '금', '토', '일'].map((day) => (
+        {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
           <div key={day} className="py-2">
             {day}
           </div>
@@ -297,6 +486,8 @@ function App() {
   const [attendanceStatus, setAttendanceStatus] = useState('');
   const [attendanceName, setAttendanceName] = useState('');
   const [attendanceMeal, setAttendanceMeal] = useState('');
+  const [attendanceCompanionCount, setAttendanceCompanionCount] = useState('');
+  const [attendanceNote, setAttendanceNote] = useState('');
   const [attendanceConsent, setAttendanceConsent] = useState(false);
   const [countdown, setCountdown] = useState({
     days: '000',
@@ -412,12 +603,65 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!attendanceModalOpen) {
+      return undefined;
+    }
+
+    const body = document.body;
+    const html = document.documentElement;
+    const previousBodyOverflow = body.style.overflow;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyTouchAction = body.style.touchAction;
+
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+    body.style.touchAction = 'none';
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setAttendanceModalOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      html.style.overflow = previousHtmlOverflow;
+      body.style.touchAction = previousBodyTouchAction;
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [attendanceModalOpen]);
+
   const introDots = '.'.repeat(INTRO_DOT_SEQUENCE[introDotFrame]);
   const canSubmitAttendance =
     attendanceSide &&
     attendanceStatus &&
+    attendanceMeal &&
     attendanceName.trim() &&
     attendanceConsent;
+
+  const resetAttendanceForm = () => {
+    setAttendanceSide('');
+    setAttendanceStatus('');
+    setAttendanceName('');
+    setAttendanceMeal('');
+    setAttendanceCompanionCount('');
+    setAttendanceNote('');
+    setAttendanceConsent(false);
+  };
+
+  const closeAttendanceSheet = () => {
+    setAttendanceModalOpen(false);
+  };
+
+  const handleAttendanceSubmit = () => {
+    window.alert('참석 의사가 전달되었습니다.');
+    resetAttendanceForm();
+    closeAttendanceSheet();
+  };
+
   const infoTabContent =
     infoTab === 'bride-room'
       ? {
@@ -435,55 +679,53 @@ function App() {
     <>
       {attendanceModalOpen ? (
         <div
-          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 p-4"
+          className="attendance-sheet-overlay"
           role="dialog"
           aria-modal="true"
-          onClick={() => setAttendanceModalOpen(false)}
+          aria-labelledby="attendance-sheet-title"
+          onClick={closeAttendanceSheet}
         >
           <div
-            className="soft-card-strong w-full max-w-[min(88vw,448px)] rounded-[24px] px-4 py-5 sm:px-5 sm:py-5"
+            className="attendance-sheet-panel"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4">
-              <h3 className="text-[22px] font-semibold tracking-[-0.05em] text-black sm:text-[24px]">
-                참석 의사 전달
+            <div className="attendance-sheet-handle" aria-hidden="true" />
+            <div className="attendance-sheet-header">
+              <div className="w-10" aria-hidden="true" />
+              <h3
+                id="attendance-sheet-title"
+                className="text-[18px] font-medium tracking-[-0.04em] text-[#4b3424] sm:text-[19px]"
+              >
+                참석 여부 전달
               </h3>
               <button
                 type="button"
-                onClick={() => setAttendanceModalOpen(false)}
-                className="inline-flex h-10 w-10 items-center justify-center text-black/35 transition hover:text-black"
-                aria-label="팝업 닫기"
+                onClick={closeAttendanceSheet}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#8d7a69] transition hover:bg-[#f7efe3] hover:text-[#4b3424]"
+                aria-label="참석 여부 전달 시트 닫기"
               >
                 <X size={22} />
               </button>
             </div>
 
-            <div className="mt-4 rounded-[18px] bg-[#f4f4f2] px-4 py-4">
-              <div className="space-y-7">
+            <div className="attendance-sheet-body">
+              <div className="space-y-6">
                 <div>
-                  <p className="text-[15px] font-medium tracking-[-0.03em] text-black sm:text-[16px]">
-                    어느 측 하객이신가요? <span className="text-[#ff4d4f]">*</span>
+                  <p className="text-[14px] font-medium tracking-[-0.03em] text-[#5d4837] sm:text-[15px]">
+                    어느 측 하객이신가요? <span className="text-[#e06f6f]">*</span>
                   </p>
-                  <div className="mt-3 grid grid-cols-2 gap-3">
+                  <div className="attendance-segment-grid mt-3 grid-cols-2">
                     <button
                       type="button"
                       onClick={() => setAttendanceSide('groom')}
-                      className={`rounded-[12px] border px-4 py-3.5 text-[15px] font-medium transition ${
-                        attendanceSide === 'groom'
-                          ? 'border-[#4f91ff] bg-white text-[#4f91ff] shadow-[0_6px_18px_rgba(79,145,255,0.16)]'
-                          : 'border-black/10 bg-white text-black'
-                      }`}
+                      className={`attendance-segment-button ${attendanceSide === 'groom' ? 'is-active' : ''}`}
                     >
                       신랑
                     </button>
                     <button
                       type="button"
                       onClick={() => setAttendanceSide('bride')}
-                      className={`rounded-[12px] border px-4 py-3.5 text-[15px] font-medium transition ${
-                        attendanceSide === 'bride'
-                          ? 'border-[#4f91ff] bg-white text-[#4f91ff] shadow-[0_6px_18px_rgba(79,145,255,0.16)]'
-                          : 'border-black/10 bg-white text-black'
-                      }`}
+                      className={`attendance-segment-button ${attendanceSide === 'bride' ? 'is-active' : ''}`}
                     >
                       신부
                     </button>
@@ -491,29 +733,21 @@ function App() {
                 </div>
 
                 <div>
-                  <p className="text-[15px] font-medium tracking-[-0.03em] text-black sm:text-[16px]">
-                    참석 하시나요? <span className="text-[#ff4d4f]">*</span>
+                  <p className="text-[14px] font-medium tracking-[-0.03em] text-[#5d4837] sm:text-[15px]">
+                    참석여부 <span className="text-[#e06f6f]">*</span>
                   </p>
-                  <div className="mt-3 grid grid-cols-2 gap-3">
+                  <div className="attendance-segment-grid mt-3 grid-cols-2">
                     <button
                       type="button"
                       onClick={() => setAttendanceStatus('attending')}
-                      className={`rounded-[12px] border px-4 py-3.5 text-[15px] font-medium transition ${
-                        attendanceStatus === 'attending'
-                          ? 'border-transparent bg-[#cdbdaf] text-white shadow-[0_6px_18px_rgba(161,133,108,0.22)]'
-                          : 'border-black/10 bg-white text-black'
-                      }`}
+                      className={`attendance-segment-button ${attendanceStatus === 'attending' ? 'is-active' : ''}`}
                     >
                       참석
                     </button>
                     <button
                       type="button"
                       onClick={() => setAttendanceStatus('absent')}
-                      className={`rounded-[12px] border px-4 py-3.5 text-[15px] font-medium transition ${
-                        attendanceStatus === 'absent'
-                          ? 'border-transparent bg-[#cdbdaf] text-white shadow-[0_6px_18px_rgba(161,133,108,0.22)]'
-                          : 'border-black/10 bg-white text-black'
-                      }`}
+                      className={`attendance-segment-button ${attendanceStatus === 'absent' ? 'is-active' : ''}`}
                     >
                       불참석
                     </button>
@@ -521,63 +755,88 @@ function App() {
                 </div>
 
                 <div>
-                  <p className="text-[15px] font-medium tracking-[-0.03em] text-black sm:text-[16px]">
-                    성함 <span className="text-[#ff4d4f]">*</span>
+                  <p className="text-[14px] font-medium tracking-[-0.03em] text-[#5d4837] sm:text-[15px]">
+                    식사여부 <span className="text-[#e06f6f]">*</span>
                   </p>
-                  <input
-                    type="text"
-                    value={attendanceName}
-                    onChange={(event) => setAttendanceName(event.target.value)}
-                    className="soft-input mt-3 w-full rounded-[12px] px-4 py-3.5 text-[15px] text-black outline-none transition focus:border-black"
-                  />
-                </div>
-
-                <div>
-                  <p className="text-[15px] font-medium tracking-[-0.03em] text-black sm:text-[16px]">
-                    식사 하시나요?
-                  </p>
-                  <div className="mt-3 grid grid-cols-2 gap-3">
+                  <div className="attendance-segment-grid mt-3 grid-cols-3">
                     <button
                       type="button"
                       onClick={() => setAttendanceMeal('yes')}
-                      className={`rounded-[12px] border px-4 py-3.5 text-[15px] font-medium transition ${
-                        attendanceMeal === 'yes'
-                          ? 'border-transparent bg-[#cdbdaf] text-white shadow-[0_6px_18px_rgba(161,133,108,0.22)]'
-                          : 'border-black/10 bg-white text-black'
-                      }`}
+                      className={`attendance-segment-button ${attendanceMeal === 'yes' ? 'is-active' : ''}`}
                     >
                       O
                     </button>
                     <button
                       type="button"
                       onClick={() => setAttendanceMeal('no')}
-                      className={`rounded-[12px] border px-4 py-3.5 text-[15px] font-medium transition ${
-                        attendanceMeal === 'no'
-                          ? 'border-transparent bg-[#cdbdaf] text-white shadow-[0_6px_18px_rgba(161,133,108,0.22)]'
-                          : 'border-black/10 bg-white text-black'
-                      }`}
+                      className={`attendance-segment-button ${attendanceMeal === 'no' ? 'is-active' : ''}`}
                     >
                       X
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAttendanceMeal('undecided')}
+                      className={`attendance-segment-button ${attendanceMeal === 'undecided' ? 'is-active' : ''}`}
+                    >
+                      미정
                     </button>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 text-[13px] text-black/42 sm:text-[14px]">
+                <div>
+                  <p className="text-[14px] font-medium tracking-[-0.03em] text-[#5d4837] sm:text-[15px]">
+                    성함 <span className="text-[#e06f6f]">*</span>
+                  </p>
+                  <input
+                    type="text"
+                    value={attendanceName}
+                    onChange={(event) => setAttendanceName(event.target.value)}
+                    placeholder="성함을 입력해주세요"
+                    className="attendance-text-input mt-3"
+                  />
+                </div>
+
+                <div>
+                  <p className="text-[14px] font-medium tracking-[-0.03em] text-[#5d4837] sm:text-[15px]">
+                    동행인 수(본인 제외)
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    inputMode="numeric"
+                    value={attendanceCompanionCount}
+                    onChange={(event) => setAttendanceCompanionCount(event.target.value)}
+                    placeholder="예: 1"
+                    className="attendance-text-input mt-3"
+                  />
+                </div>
+
+                <div>
+                  <p className="text-[14px] font-medium tracking-[-0.03em] text-[#5d4837] sm:text-[15px]">
+                    전달사항
+                  </p>
+                  <textarea
+                    value={attendanceNote}
+                    onChange={(event) => setAttendanceNote(event.target.value)}
+                    placeholder="남기실 말씀을 적어주세요"
+                    className="attendance-textarea mt-3"
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-[#7b6b5f] sm:text-[14px]">
                   <button
                     type="button"
                     onClick={() => setAttendanceConsent((prev) => !prev)}
-                    className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] border transition ${
-                      attendanceConsent ? 'border-black bg-black text-white' : 'border-black/14 bg-white text-transparent'
-                    }`}
+                    className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[3px] border transition ${attendanceConsent ? 'border-[#d6b7b6] bg-[#d6b7b6] text-white' : 'border-[#dfd5ca] bg-white text-transparent'}`}
                     aria-label="개인정보 수집 및 활용 동의"
                   >
-                    <Check size={16} />
+                    <Check size={12} />
                   </button>
                   <span>개인정보 수집 및 활용 동의</span>
                   <button
                     type="button"
                     onClick={() => window.alert('참석 의사 확인을 위한 최소한의 정보만 수집합니다.')}
-                    className="text-black/45 underline underline-offset-4"
+                    className="text-[#8a7c71] underline underline-offset-4"
                   >
                     [자세히보기]
                   </button>
@@ -588,17 +847,15 @@ function App() {
             <button
               type="button"
               disabled={!canSubmitAttendance}
-              onClick={() => {
-                window.alert('참석 의사가 전달되었습니다.');
-                setAttendanceModalOpen(false);
-              }}
-              className="mt-4 inline-flex w-full items-center justify-center rounded-[14px] bg-[#cfcfcf] px-5 py-3.5 text-[17px] font-semibold text-white transition enabled:bg-[#cdbdaf] enabled:shadow-[0_10px_24px_rgba(161,133,108,0.22)] disabled:cursor-not-allowed"
+              onClick={handleAttendanceSubmit}
+              className="attendance-submit-button mt-5"
             >
-              전달하기
+              전달
             </button>
           </div>
         </div>
       ) : null}
+
       {introVisible && (
         <div className="intro-overlay">
           <div className="intro-content">
@@ -635,7 +892,7 @@ function App() {
                 <p className="party-complete-label">파티 모집 완료! 이제부터 같은 팀입니다.</p>
                 <div className="space-y-2">
                   <p className="point-text text-[18px] leading-tight tracking-[-0.04em]">
-                    {groomGivenName}이와 {brideGivenName}의
+                    <span className="font-bold">{groomGivenName}</span>이와 <span className="font-bold">{brideGivenName}</span>의
                   </p>
                   <p className="point-text text-[18px] leading-tight tracking-[-0.04em]">
                     결혼식에 초대드립니다.
@@ -652,22 +909,13 @@ function App() {
 
           <ScrollAnimationWrapper amount={0.2}>
             <section className="section-block pt-0 text-center">
-              <p className="text-[16px] leading-[1.75] tracking-[-0.03em] text-black">
-                긴 여정 끝에 최고의 파티원을 만났습니다.
-                <br />
-                <br />
-                인생의 솔로 플레이를 마치고,
-                <br />
-                이제는 둘이 함께 새로운 퀘스트에 도전합니다.
-                <br />
-                <br />
-                *퀘스트: 행복하고 예쁘게 살기 (진행 중)
-                <br />
-                <br />
-                저희의 새로운 모험이 시작되는 날을
-                <br />
-                함께 응원해 주세요.
-              </p>
+              <div className="text-[16px] leading-[1.75] tracking-[-0.03em] text-black">
+                <p>긴 여정 끝에 최고의 파티원을 만났습니다.</p>
+                <p>인생의 솔로 플레이를 마치고,</p>
+                <p>이제는 둘이 함께 새로운 퀘스트에 도전합니다.</p>
+                <p>*퀘스트: 행복하고 예쁘게 살기 (진행 중)</p>
+                <p>저희의 새로운 모험이 시작되는 날을 함께 응원해 주세요.</p>
+              </div>
               <div className="mt-6 flex justify-center">
                 <button
                   type="button"
@@ -683,8 +931,64 @@ function App() {
           <ScrollAnimationWrapper amount={0.18} delay={0.04}>
             <section className="section-block gap-8">
               <SectionHeading title="우리의 소개" />
-              <div className="space-y-6">
-                <article className="soft-card grid grid-cols-[110px_1fr] gap-4 p-4">
+              <div className="couple-intro-columns">
+                <div className="intro-person-column">
+                  <div className="intro-portrait-frame">
+                    <img
+                      src={`${import.meta.env.BASE_URL}${weddingInfo.gallery[1].src}`}
+                      alt={`신부 ${weddingInfo.bride.name}`}
+                      className="intro-portrait-image"
+                    />
+                  </div>
+                  <article className="intro-profile-card">
+                    <div className="flex items-center gap-2">
+                      <span className="soft-chip inline-block px-2 py-0.5 text-[11px] font-medium tracking-[0.16em] text-black/55">
+                        신부
+                      </span>
+                      <p className="point-text text-[24px] font-medium tracking-[-0.04em]">{brideGivenName}</p>
+                    </div>
+                    <span className="intro-profile-divider" aria-hidden="true" />
+                    <p className="text-[13px] leading-relaxed text-black/55">
+                      <span className="font-semibold text-black/72">
+                        {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}
+                      </span>의 장녀
+                    </p>
+                    <div className="text-[13px] leading-[1.8] text-black/45">
+                      <p>{weddingInfo.bride.profile.birthDate}</p>
+                      <p>{weddingInfo.bride.profile.tags.join(' ')}</p>
+                    </div>
+                  </article>
+                </div>
+
+                <div className="intro-person-column intro-person-column-offset">
+                  <article className="intro-profile-card intro-profile-card-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="soft-chip inline-block px-2 py-0.5 text-[11px] font-medium tracking-[0.16em] text-black/55">
+                        신랑
+                      </span>
+                      <p className="point-text text-[24px] font-medium tracking-[-0.04em]">{groomGivenName}</p>
+                    </div>
+                    <span className="intro-profile-divider intro-profile-divider-right" aria-hidden="true" />
+                    <p className="text-[13px] leading-relaxed text-black/55">
+                      <span className="font-semibold text-black/72">
+                        {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}
+                      </span>의 장남
+                    </p>
+                    <div className="text-[13px] leading-[1.8] text-black/45">
+                      <p>{weddingInfo.groom.profile.birthDate}</p>
+                      <p>{weddingInfo.groom.profile.tags.join(' ')}</p>
+                    </div>
+                  </article>
+                  <div className="intro-portrait-frame">
+                    <img
+                      src={`${import.meta.env.BASE_URL}${weddingInfo.gallery[0].src}`}
+                      alt={`신랑 ${weddingInfo.groom.name}`}
+                      className="intro-portrait-image"
+                    />
+                  </div>
+                </div>
+              </div>
+              {/*
                   <div className="aspect-square">
                     <img
                       src={`${import.meta.env.BASE_URL}${weddingInfo.gallery[0].src}`}
@@ -709,7 +1013,7 @@ function App() {
                       <p>{weddingInfo.groom.profile.tags.join(' ')}</p>
                     </div>
                   </div>
-                </article>
+                </article> : null}
 
                 <article className="soft-card grid grid-cols-[1fr_110px] gap-4 p-4">
                   <div className="space-y-2 self-center text-right">
@@ -737,134 +1041,100 @@ function App() {
                     />
                   </div>
                 </article>
-              </div>
-
+              */}
             </section>
           </ScrollAnimationWrapper>
 
-          <ScrollAnimationWrapper amount={0.18}>
-            <section className="section-block gap-8">
-              <SectionHeading title="예식 안내" />
-              <p className="text-center text-[13px] leading-[1.8] text-black/55">
-                <span className="point-text text-[17px] font-semibold tracking-[-0.03em]">
-                  {weddingInfo.location.name}
-                </span>
-                <br />
-                {weddingInfo.dateLabel} {weddingInfo.timeLabel}
-              </p>
-              <CalendarBlock />
-              <div className="text-center">
-                <p className="point-text text-[14px]">
-                  {groomGivenName} ♥ {brideGivenName} 결혼식까지 <span className="font-semibold">{remainingDaysText}</span> 남았습니다.
-                </p>
-                <div className="soft-card-strong mt-3 flex items-center justify-center gap-2 px-5 py-4">
-                  {[
-                    { label: 'Days', value: countdown.days },
-                    { label: 'Hour', value: countdown.hours },
-                    { label: 'Min', value: countdown.minutes },
-                    { label: 'Sec', value: countdown.seconds },
-                  ].map((item, index, array) => (
-                    <React.Fragment key={item.label}>
-                      <div className="min-w-[58px] text-center">
-                        <p className="point-text text-[23px] font-semibold tracking-[-0.06em]">{item.value}</p>
-                        <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-black/45">{item.label}</p>
-                      </div>
-                      {index < array.length - 1 ? (
-                        <span className="point-text -mt-4 text-[20px] font-semibold leading-none">:</span>
-                      ) : null}
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            </section>
-          </ScrollAnimationWrapper>
-
-          <ScrollAnimationWrapper amount={0.16}>
+          <ScrollAnimationWrapper amount={0.18} delay={0.02}>
             <LoveStoryTimeline items={loveStoryItems} />
           </ScrollAnimationWrapper>
-          <ScrollAnimationWrapper amount={0.16}>
-            <GalleryGrid images={galleryImages} />
-          </ScrollAnimationWrapper>
 
           <ScrollAnimationWrapper amount={0.18}>
-            <section className="section-block gap-8">
-              <SectionHeading title="안내사항" />
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setInfoTab('bride-room')}
-                  className={`px-4 py-3 text-[13px] font-medium transition ${
-                    infoTab === 'bride-room'
-                      ? 'soft-card-strong point-text'
-                      : 'soft-card text-black/55 hover:text-black'
-                  }`}
-                >
-                  신부대기실
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInfoTab('banquet')}
-                  className={`px-4 py-3 text-[13px] font-medium transition ${
-                    infoTab === 'banquet'
-                      ? 'soft-card-strong point-text'
-                      : 'soft-card text-black/55 hover:text-black'
-                  }`}
-                >
-                  연회장
-                </button>
-              </div>
-
-              <figure className="soft-card overflow-hidden">
-                <img
-                  src={infoTabContent.image}
-                  alt={infoTabContent.alt}
-                  className="aspect-auto w-full object-contain"
-                />
-                <figcaption className="space-y-4 px-5 py-5 text-left text-[13px] leading-[1.8] text-black/68">
-                  <div className="text-center">
-                    <p className="point-text text-[18px] font-semibold tracking-[-0.04em]">
-                      {infoTabContent.title}
-                    </p>
-                  </div>
-
-                  {infoTab === 'bride-room' ? (
-                    <div className="space-y-3">
-                      <p>신부대기실은 옆 계단으로 올라오셔야 합니다.</p>
-                      <p>
-                        계단을 이용하시기 어려우신 분들은
-                        <br />
-                        직원 안내에 따라 엘리베이터로 올라오실 수 있어요.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <p>
-                        연회장은 예식장 바로 옆에 위치하고 있습니다.
-                        <br />
-                        연회장은 예식 30분 전부터 이용 가능합니다.
-                      </p>
-                      <p>180여 가지의 뷔페식이고, 음주류도 있으니 맘껏 즐겨주세요.</p>
-                      <div className="space-y-2">
-                        <p className="font-semibold text-black">특히 이 메뉴는 놓치지 마세요!</p>
-                        <ul className="space-y-1">
-                          <li>- LA 갈비를 포함한 모든 고기 메뉴</li>
-                          <li>- 전복갈비탕, 설렁탕, 도가니탕</li>
-                          <li>- 육회는 꼭 노른자를 곁들여서</li>
-                          <li>- 파스타는 바로 만들어서 신선</li>
-                          <li>- 젤라또는 와플이랑 같이</li>
-                          <li>- 사케 + 냉면 꿀조합 / 와인은 반반 믹스 추천</li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                </figcaption>
-              </figure>
-            </section>
+            <GalleryGrid images={galleryImages} />
           </ScrollAnimationWrapper>
 
           <ScrollAnimationWrapper amount={0.16}>
             <Map />
           </ScrollAnimationWrapper>
+
+          <ScrollAnimationWrapper amount={0.18}>
+            <section className="section-block gap-8">
+              <SectionHeading title="안내사항" />
+              <div className="soft-card overflow-hidden">
+                <div
+                  className="grid grid-cols-2 gap-0 border-b border-black/8 bg-[#f8f6ef]"
+                  role="tablist"
+                  aria-label="안내사항 탭"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={infoTab === 'bride-room'}
+                    aria-controls="info-tab-panel"
+                    onClick={() => setInfoTab('bride-room')}
+                    className={`info-tab-button ${infoTab === 'bride-room' ? 'is-active' : ''}`}
+                  >
+                    신부대기실
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={infoTab === 'banquet'}
+                    aria-controls="info-tab-panel"
+                    onClick={() => setInfoTab('banquet')}
+                    className={`info-tab-button ${infoTab === 'banquet' ? 'is-active' : ''}`}
+                  >
+                    연회장
+                  </button>
+                </div>
+
+                <figure id="info-tab-panel" role="tabpanel">
+                  <img
+                    src={infoTabContent.image}
+                    alt={infoTabContent.alt}
+                    className="aspect-auto w-full object-contain"
+                  />
+                  <figcaption className="space-y-4 px-5 py-5 text-left text-[13px] leading-[1.8] text-black/68">
+                    {infoTab === 'bride-room' ? (
+                      <div className="space-y-3">
+                        <p>신부대기실은 4층 계단으로 올라오시면 됩니다.</p>
+                        <p>
+                          계단 이용이 어려우신 분들은
+                          <br />
+                          직원 안내에 따라 엘리베이터로 올라오실 수 있어요.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <p>
+                          연회장은 예식장 바로 옆에 위치하고 있습니다.
+                          <br />
+                          연회장은 예식 30분 전부터 이용 가능합니다.
+                        </p>
+                        <p>180여 가지의 뷔페식과 음주류가 준비되어 있으니 맛있게 즐겨주세요.</p>
+                        <div className="space-y-2">
+                          <p className="font-semibold text-black">특히 이 메뉴는 꼭 챙겨보세요!</p>
+                          <ul className="space-y-1">
+                            <li>- LA 갈비를 포함한 모든 고기 메뉴</li>
+                            <li>- 육회갈비와 즉석 스테이크</li>
+                            <li>- 연회장 전용 코너의 초밥 섹션</li>
+                            <li>- 파스타는 바로 만들어줘서 특히 추천</li>
+                            <li>- 와플과 함께 즐기는 디저트 코너</li>
+                            <li>- 식사 후에는 커피와 과일, 아이스크림 추천</li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </figcaption>
+                </figure>
+              </div>
+            </section>
+          </ScrollAnimationWrapper>
+
+          <ScrollAnimationWrapper amount={0.12}>
+            <Guestbook />
+          </ScrollAnimationWrapper>
+
           <ScrollAnimationWrapper amount={0.14}>
             <section className="section-block gap-6">
               <SectionHeading title="마음 전하실 곳" />
@@ -873,7 +1143,7 @@ function App() {
                 <br />
                 하시는 분들을 위해 기재하였습니다.
                 <br />
-                너그러운 마음으로 양해부탁드립니다.
+                너그러운 마음으로 양해 부탁드립니다.
               </p>
               <div className="grid gap-4">
                 <AccountAccordion
@@ -911,9 +1181,7 @@ function App() {
               </div>
             </section>
           </ScrollAnimationWrapper>
-          <ScrollAnimationWrapper amount={0.12}>
-            <Guestbook />
-          </ScrollAnimationWrapper>
+
           <ScrollAnimationWrapper amount={0.12}>
             <section className="section-block gap-6 text-center">
               <SectionHeading title="참석 의사 전달" />
@@ -935,6 +1203,7 @@ function App() {
               </div>
             </section>
           </ScrollAnimationWrapper>
+
           <ScrollAnimationWrapper amount={0.12}>
             <section className="section-block text-center">
               <p className="text-[18px] leading-[1.7] tracking-[-0.03em] text-black/68">
@@ -943,7 +1212,7 @@ function App() {
                 진심으로 감사드립니다.
                 <br />
                 <br />
-                저희 두사람,
+                저희 두 사람,
                 <br />
                 <span className="point-text font-semibold tracking-[0.08em]">잘 먹고</span>
                 <br />
