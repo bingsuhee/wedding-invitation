@@ -84,7 +84,10 @@ function LockScreen({ onUnlock }) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const unlockThreshold = 110;
-  const lockDateLabel = `${weddingInfo.year}년 ${weddingInfo.month}월 ${weddingInfo.day}일`;
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+  const ceremonyWeekday =
+    weekdays[new Date(weddingInfo.year, weddingInfo.month - 1, weddingInfo.day).getDay()];
+  const lockDateLabel = `${weddingInfo.year}.${String(weddingInfo.month).padStart(2, '0')}.${String(weddingInfo.day).padStart(2, '0')} (${ceremonyWeekday})`;
   const lockTimeLabel = `${String(weddingInfo.hour).padStart(2, '0')}:${String(weddingInfo.minute).padStart(2, '0')}`;
 
   const handlePointerDown = (event) => {
@@ -121,28 +124,37 @@ function LockScreen({ onUnlock }) {
       <div className="lock-screen-copy">
         <p className="lock-date">{lockDateLabel}</p>
         <p className="lock-time">{lockTimeLabel}</p>
-        <h1>{`${weddingInfo.groom.name} ♥ ${weddingInfo.bride.name}`}</h1>
-        <p className="lock-subcopy">
-          파티 모집 완료! 이제부터 같은 팀입니다.
-          <br />
-          위로 스와이프 해 새로운 모험을 시작해주세요.
-        </p>
       </div>
 
-      <button
-        type="button"
-        className={`swipe-unlock ${isDragging ? 'is-dragging' : ''}`}
-        style={{ transform: `translateY(${-swipeOffset}px)` }}
-        onPointerDown={handlePointerDown}
-        onClick={onUnlock}
-        aria-label="위로 스와이프해 잠금 해제"
-      >
-        <span className="swipe-unlock-pill" />
-        <span className="swipe-unlock-text">
-          <ChevronUp size={16} />
-          위로 스와이프
-        </span>
-      </button>
+      <div className="lock-bottom-stack">
+        <div className="lock-widget-card">
+          <div className="lock-widget-meta">
+            <p className="lock-widget-label">Wedding invitation</p>
+            <p className="lock-widget-time">1분 전</p>
+          </div>
+          <h1>{`${weddingInfo.groom.name} ♥ ${weddingInfo.bride.name}`}</h1>
+          <p className="lock-subcopy">
+            수빈이와 소희의 결혼식에 초대드립니다.
+            <br />
+            2026년 10월 11일 오후 12시 JK아트컨벤션 아트리움홀
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className={`swipe-unlock ${isDragging ? 'is-dragging' : ''}`}
+          style={{ transform: `translateY(${-swipeOffset}px)` }}
+          onPointerDown={handlePointerDown}
+          onClick={onUnlock}
+          aria-label="위로 스와이프해 잠금 해제"
+        >
+          <span className="swipe-unlock-pill" />
+          <span className="swipe-unlock-text">
+            <ChevronUp size={16} />
+            위로 스와이프
+          </span>
+        </button>
+      </div>
     </div>
   );
 }
@@ -757,7 +769,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // 모바일에서 단계 전환 중 페이지 전체가 스크롤되지 않도록 고정합니다.
     document.body.classList.add('iphone-body-lock');
     document.documentElement.classList.add('iphone-html-lock');
 
