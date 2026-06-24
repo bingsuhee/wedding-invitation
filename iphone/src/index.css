@@ -43,47 +43,22 @@
   }
 }
 
+html.iphone-html-lock,
+body.iphone-body-lock {
+  height: 100%;
+  overflow: hidden;
+}
+
 .iphone-page-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 0;
-}
-
-.iphone-stage {
-  display: grid;
-  gap: 28px;
-  align-items: start;
-  justify-items: center;
-}
-
-.phone-frame {
-  position: relative;
-  width: min(100%, 390px);
-  padding: 14px;
-  border-radius: 44px;
-  background:
-    linear-gradient(160deg, rgba(63, 61, 67, 0.96), rgba(10, 12, 16, 0.98)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent);
-  box-shadow:
-    0 38px 90px rgba(58, 38, 19, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.phone-notch {
-  position: absolute;
-  top: 24px;
-  left: 50%;
-  z-index: 5;
-  width: 132px;
-  height: 30px;
-  border-radius: 0 0 18px 18px;
-  background: rgba(10, 10, 12, 0.96);
-  transform: translateX(-50%);
 }
 
 .phone-screen {
   position: relative;
   overflow: hidden;
-  min-height: 780px;
+  height: 100dvh;
+  min-height: 100dvh;
   border-radius: 34px;
   background-position: center top;
   background-size: cover;
@@ -92,7 +67,9 @@
 
 .mobile-phone-screen {
   width: min(100%, 430px);
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   margin: 0 auto;
   border-radius: 0;
   box-shadow: none;
@@ -124,6 +101,11 @@
 .opened-app-shell {
   position: relative;
   z-index: 1;
+}
+
+.stage-panel {
+  height: calc(100dvh - 37px);
+  min-height: calc(100dvh - 37px);
 }
 
 .phone-statusbar {
@@ -159,18 +141,22 @@
 
 .home-screen {
   display: flex;
-  min-height: 744px;
+  height: 100%;
   flex-direction: column;
   justify-content: space-between;
-  padding: 58px 22px 22px;
+  padding: 26px 22px 22px;
+  overflow: hidden;
+  animation: stage-rise-in 0.38s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .lock-screen {
   display: flex;
-  min-height: 744px;
+  height: 100%;
   flex-direction: column;
   justify-content: space-between;
-  padding: 86px 22px 28px;
+  padding: 44px 22px 28px;
+  overflow: hidden;
+  animation: lock-screen-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .lock-screen-copy,
@@ -182,30 +168,35 @@
 
 .lock-date {
   margin: 0;
-  font-size: 15px;
+  font-size: clamp(12px, 3.1vw, 14px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
   opacity: 0.94;
 }
 
 .lock-time {
-  margin: 6px 0 0;
-  font-size: 16px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.82;
+  margin: 10px 0 0;
+  font-size: clamp(52px, 15vw, 76px);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+  opacity: 1;
 }
 
-.lock-copy h1 {
-  margin: 12px 0 0;
-  font-size: clamp(38px, 10vw, 52px);
-  line-height: 0.96;
-  letter-spacing: -0.06em;
+.lock-screen-copy h1 {
+  margin: 14px 0 0;
+  font-size: clamp(15px, 4vw, 18px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
 }
 
 .lock-subcopy {
-  margin: 14px 0 0;
-  font-size: 14px;
-  line-height: 1.7;
-  opacity: 0.9;
+  margin: 22px 0 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.8;
+  opacity: 0.96;
 }
 
 .swipe-unlock {
@@ -215,10 +206,12 @@
   padding: 12px 16px 2px;
   color: #fff;
   transition: transform 0.2s ease;
+  animation: swipe-nudge 1.8s ease-in-out infinite;
 }
 
 .swipe-unlock.is-dragging {
   transition: none;
+  animation: none;
 }
 
 .swipe-unlock-pill {
@@ -239,7 +232,7 @@
 }
 
 .home-widget-card {
-  padding: 18px;
+  padding: 16px 18px;
   border: 1px solid rgba(255, 255, 255, 0.26);
   border-radius: 26px;
   background: rgba(255, 255, 255, 0.16);
@@ -248,34 +241,43 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.24),
     0 24px 36px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(18px);
+  animation: widget-float-in 0.52s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .home-widget-label {
   margin: 0;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  opacity: 0.76;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  opacity: 0.84;
 }
 
 .home-widget-card h2 {
-  margin: 10px 0 0;
-  font-size: 24px;
-  line-height: 1.2;
+  margin: 6px 0 0;
+  font-size: 25px;
+  line-height: 1.18;
   letter-spacing: -0.05em;
 }
 
 .home-widget-card p {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.6;
   opacity: 0.92;
+}
+
+.home-bottom-stack {
+  display: grid;
+  gap: 14px;
+  margin-top: auto;
 }
 
 .home-app-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px 10px;
+  animation: apps-grid-in 0.46s cubic-bezier(0.2, 0.8, 0.2, 1);
+  align-items: end;
 }
 
 .home-app-button {
@@ -312,6 +314,7 @@
 .app-map { background: linear-gradient(160deg, #4ad98a, #17a46d); }
 .app-guestbook { background: linear-gradient(160deg, #6f8cff, #5b54e9); }
 .app-account { background: linear-gradient(160deg, #8577ff, #c474f5); }
+.app-rsvp { background: linear-gradient(160deg, #f7b64a, #f28348); }
 
 .home-app-label {
   font-size: 12px;
@@ -328,6 +331,7 @@
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(18px);
+  animation: dock-up-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .dock-button {
@@ -342,10 +346,11 @@
 
 .opened-app-shell {
   display: flex;
-  min-height: 744px;
+  height: calc(100dvh - 37px);
+  min-height: calc(100dvh - 37px);
   flex-direction: column;
-  padding-top: 46px;
-  animation: app-shell-in 0.26s ease;
+  padding-top: 18px;
+  animation: detail-open-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .opened-app-header {
@@ -380,6 +385,8 @@
 .opened-app-body {
   flex: 1 1 auto;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 0 14px 14px;
   animation: app-screen-in 0.28s ease;
 }
@@ -751,6 +758,147 @@
   font-weight: 700;
 }
 
+.attendance-card {
+  display: grid;
+  gap: 18px;
+}
+
+.attendance-form-section {
+  display: grid;
+  gap: 10px;
+}
+
+.attendance-label {
+  margin: 0;
+  color: #5d4837;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.attendance-label span {
+  color: #e06f6f;
+}
+
+.attendance-segment-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.attendance-segment-grid.two-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.attendance-segment-grid.three-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.attendance-segment-button,
+.attendance-text-input,
+.attendance-textarea {
+  border: 1px solid rgba(214, 197, 182, 0.72);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #4b3424;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.attendance-segment-button {
+  min-height: 48px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.attendance-segment-button.is-active {
+  border-color: rgba(236, 166, 131, 0.95);
+  background: #fff3ea;
+  color: #9a583f;
+}
+
+.attendance-text-input,
+.attendance-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.attendance-textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.attendance-text-input::placeholder,
+.attendance-textarea::placeholder {
+  color: rgba(103, 82, 66, 0.45);
+}
+
+.attendance-text-input:focus,
+.attendance-textarea:focus {
+  outline: none;
+  border-color: rgba(236, 166, 131, 0.95);
+  box-shadow: 0 0 0 3px rgba(255, 212, 188, 0.45);
+}
+
+.attendance-consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.attendance-consent-box {
+  display: inline-flex;
+  height: 20px;
+  width: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dfd5ca;
+  border-radius: 4px;
+  background: #fff;
+  color: transparent;
+}
+
+.attendance-consent-box.is-active {
+  border-color: #d6b7b6;
+  background: #d6b7b6;
+  color: #fff;
+}
+
+.attendance-consent-copy {
+  display: grid;
+  gap: 4px;
+  color: #7b6b5f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.attendance-consent-link {
+  width: fit-content;
+  color: #8a7c71;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.attendance-submit-button {
+  min-height: 52px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #f3b088 0%, #e98963 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  box-shadow: 0 14px 24px rgba(211, 126, 82, 0.24);
+}
+
+.attendance-submit-button:disabled {
+  background: linear-gradient(180deg, #e7ddd6 0%, #d7ccc4 100%);
+  color: rgba(255, 255, 255, 0.82);
+  box-shadow: none;
+}
+
 .rotate-180 {
   transform: rotate(180deg);
 }
@@ -779,23 +927,109 @@
   }
 }
 
+@keyframes lock-screen-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes stage-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes widget-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes apps-grid-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dock-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes detail-open-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes swipe-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  35% {
+    transform: translateY(-8px);
+  }
+
+  65% {
+    transform: translateY(4px);
+  }
+}
+
 @media (max-width: 420px) {
   .iphone-page-shell {
     padding: 0;
   }
 
-  .phone-screen {
-    min-height: 720px;
-  }
-
-  .lock-screen,
-  .home-screen,
-  .opened-app-shell {
-    min-height: 686px;
+  .home-app-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px 8px;
   }
 
   .home-app-icon {
     width: 58px;
     height: 58px;
+  }
+
+  .home-app-label {
+    font-size: 11px;
   }
 }
