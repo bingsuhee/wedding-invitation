@@ -420,17 +420,19 @@ body.iphone-body-lock {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(18px);
   animation: dock-up-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  justify-items: center;
 }
 
 .dock-button {
   display: inline-flex;
-  min-height: 56px;
+  width: 64px;
+  height: 64px;
   align-items: center;
   justify-content: center;
   border-radius: 18px;
@@ -470,10 +472,11 @@ body.iphone-body-lock {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   color: #5f493d;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .opened-app-body {
@@ -597,7 +600,7 @@ body.iphone-body-lock {
 }
 
 .party-copy-label {
-  margin: 0;
+  margin: 0 0 4px;
   width: fit-content;
   padding: 8px 12px;
   border-radius: 999px;
@@ -640,7 +643,7 @@ body.iphone-body-lock {
 
 .message-stack {
   display: grid;
-  gap: 14px;
+  gap: 8px;
 }
 
 .message-block.is-emphasis {
@@ -656,6 +659,22 @@ body.iphone-body-lock {
 .profile-card {
   display: grid;
   gap: 16px;
+}
+
+.profile-card.compact {
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: start;
+}
+
+.profile-card.compact .profile-image {
+  aspect-ratio: 1 / 1;
+  height: 100%;
+}
+
+.profile-duo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .profile-image {
@@ -702,24 +721,14 @@ body.iphone-body-lock {
   margin-top: 14px;
 }
 
-.story-row {
+.story-card {
   display: grid;
-  grid-template-columns: 14px 1fr;
-  gap: 12px;
-}
-
-.story-dot {
-  width: 14px;
-  height: 14px;
-  margin-top: 4px;
-  border: 3px solid #ffb39a;
-  border-radius: 999px;
-  background: #fff6f0;
+  gap: 14px;
 }
 
 .story-answer-card {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 0;
+  padding-top: 12px;
   border-top: 1px dashed rgba(94, 73, 55, 0.16);
 }
 
@@ -730,11 +739,20 @@ body.iphone-body-lock {
   font-weight: 800;
 }
 
-.story-date {
-  margin: 0 0 4px;
-  color: #a26a53;
-  font-size: 12px;
+.story-question {
+  margin: 0;
+  color: rgba(55, 40, 28, 0.6);
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.story-feature-image {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  border-radius: 22px;
+  object-fit: cover;
 }
 
 .gallery-grid {
@@ -743,10 +761,18 @@ body.iphone-body-lock {
   gap: 10px;
 }
 
+.gallery-grid.only-images .gallery-tile {
+  border: 0;
+}
+
 .gallery-tile {
   overflow: hidden;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.72);
+}
+
+.button-tile {
+  padding: 0;
 }
 
 .gallery-tile.is-large {
@@ -763,10 +789,60 @@ body.iphone-body-lock {
   aspect-ratio: 4 / 3;
 }
 
-.gallery-tile figcaption {
-  padding: 10px 12px 12px;
-  color: rgba(29, 25, 21, 0.7);
-  font-size: 12px;
+.gallery-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.84);
+}
+
+.gallery-viewer-image-wrap {
+  width: min(100vw - 88px, 720px);
+  max-height: calc(100dvh - 88px);
+}
+
+.gallery-viewer-image {
+  width: 100%;
+  max-height: calc(100dvh - 88px);
+  object-fit: contain;
+}
+
+.gallery-viewer-close,
+.gallery-viewer-nav {
+  position: fixed;
+  z-index: 31;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.gallery-viewer-close {
+  top: 22px;
+  right: 22px;
+  width: 40px;
+  height: 40px;
+}
+
+.gallery-viewer-nav {
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  transform: translateY(-50%);
+}
+
+.gallery-viewer-nav.left {
+  left: 18px;
+}
+
+.gallery-viewer-nav.right {
+  right: 18px;
 }
 
 .soft-input {
@@ -814,17 +890,17 @@ body.iphone-body-lock {
   border-radius: 22px;
 }
 
+.iphone-map-screen .section-block > .text-center {
+  display: none;
+}
+
 .info-copy {
   display: grid;
   gap: 10px;
   margin-top: 14px;
 }
 
-.account-toggle {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
+.account-static-title {
   color: #1d1713;
   font-size: 16px;
   font-weight: 700;
@@ -836,6 +912,10 @@ body.iphone-body-lock {
   margin-top: 16px;
 }
 
+.account-list.always-open {
+  margin-top: 12px;
+}
+
 .account-row {
   display: flex;
   align-items: center;
@@ -843,6 +923,11 @@ body.iphone-body-lock {
   gap: 16px;
   padding-top: 14px;
   border-top: 1px solid rgba(94, 73, 55, 0.08);
+}
+
+.account-row.first-row {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .copy-button {
@@ -993,6 +1078,127 @@ body.iphone-body-lock {
   box-shadow: none;
 }
 
+.invitation-inline-image-wrap {
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.invitation-inline-image {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: cover;
+}
+
+.map-embedded-card .section-block {
+  gap: 16px;
+}
+
+.guestbook-card {
+  display: grid;
+  gap: 14px;
+}
+
+.guestbook-form-card {
+  display: grid;
+  gap: 12px;
+}
+
+.guestbook-input {
+  width: 100%;
+  border: 1px solid rgba(214, 197, 182, 0.72);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 14px 16px;
+  color: #1d1a17;
+}
+
+.guestbook-input.textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.guestbook-message-list {
+  display: grid;
+  gap: 12px;
+}
+
+.guestbook-message-card {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(232, 219, 208, 0.92);
+}
+
+.guestbook-message-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.guestbook-avatar {
+  display: inline-flex;
+  height: 38px;
+  width: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 241, 229, 0.96);
+  color: #8c6c56;
+}
+
+.guestbook-name {
+  margin: 0;
+  color: #1d1713;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.guestbook-date {
+  margin: 2px 0 0;
+  color: rgba(29, 25, 21, 0.4);
+  font-size: 12px;
+}
+
+.guestbook-body {
+  margin: 12px 0 0;
+  color: rgba(29, 25, 21, 0.72);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.guestbook-empty-state {
+  color: rgba(29, 25, 21, 0.48);
+  text-align: center;
+  padding: 24px 0;
+}
+
+.guestbook-empty-state.with-icon {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.guestbook-more-button,
+.guestbook-submit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #7a5845;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.guestbook-submit-button {
+  background: linear-gradient(180deg, #f3b088 0%, #e98963 100%);
+  color: #fff;
+}
+
 .rotate-180 {
   transform: rotate(180deg);
 }
@@ -1139,6 +1345,11 @@ body.iphone-body-lock {
     gap: 14px 8px;
   }
 
+  .dock-button {
+    width: 58px;
+    height: 58px;
+  }
+
   .home-app-icon {
     width: 58px;
     height: 58px;
@@ -1146,5 +1357,17 @@ body.iphone-body-lock {
 
   .home-app-label {
     font-size: 11px;
+  }
+
+  .profile-duo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card.compact {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+
+  .gallery-viewer-image-wrap {
+    width: min(100vw - 52px, 720px);
   }
 }

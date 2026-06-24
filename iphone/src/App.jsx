@@ -3,34 +3,37 @@ import {
   CalendarDays,
   Camera,
   Check,
-  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   Heart,
   Image as ImageIcon,
   Mail,
   MapPinned,
   MessageCircleMore,
-  MoonStar,
+  Send,
+  User,
   UserRound,
   WalletCards,
   X,
 } from 'lucide-react';
-import Map from '../../cookierun/src/components/Map';
-import Guestbook from '../../cookierun/src/components/Guestbook';
 import { supabase } from './lib/supabaseClient';
 import { weddingInfo } from '@shared/data/info';
+import Map from '../../cookierun/src/components/Map';
 
 const HERO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-hero.png`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
 const GROOM_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-groom.png`;
-const HERO_MESSAGE_BLOCKS = [
-  { text: '긴 여정 끝에 최고의 파티원을 만났습니다.' },
-  { text: '인생이라는 모험의 다음 챕터를\n이제는 같은 팀으로 함께합니다.' },
-  { text: '서로의 하루를 가장 가까이에서 응원하며 살아가겠습니다.', bold: true },
-  { text: '새로운 시작을 축복해주실 여러분을 초대합니다.' },
+const PAGE_SIZE = 10;
+const INVITATION_MESSAGE_HTML = [
+  '긴 여정 끝에 최고의 파티원을 만났습니다.',
+  '인생의 솔로 플레이를 마치고,<br />이제는 둘이 함께 새로운 퀘스트에 도전합니다.',
+  '*퀘스트: 행복하고 예쁘게 살기 (진행 중)*',
+  '저희의 새로운 모험이 시작되는 날을 함께 응원해주세요.',
 ];
+
 const APP_ICONS = {
   invitation: Mail,
   profile: UserRound,
@@ -39,6 +42,16 @@ const APP_ICONS = {
   guestbook: MessageCircleMore,
   account: WalletCards,
   rsvp: CalendarDays,
+};
+
+const APP_TITLES = {
+  invitation: '초대장',
+  profile: '우리 이야기',
+  gallery: '갤러리',
+  map: '예식장 안내',
+  guestbook: '방명록',
+  account: '축의금',
+  rsvp: '참석 여부',
 };
 
 function AppIcon({ appKey, label, onOpen }) {
@@ -51,16 +64,6 @@ function AppIcon({ appKey, label, onOpen }) {
       </span>
       <span className="home-app-label">{label}</span>
     </button>
-  );
-}
-
-function ScreenTitle({ children }) {
-  return (
-    <div className="screen-title-wrap">
-      <h2 className="paint-title-heading text-[20px] font-semibold leading-[1.2] tracking-[-0.04em]">
-        <span className="paint-title">{children}</span>
-      </h2>
-    </div>
   );
 }
 
@@ -186,10 +189,7 @@ function HomeScreen({ onOpen }) {
 
     updateRemainingDays();
     const intervalId = window.setInterval(updateRemainingDays, 60000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
+    return () => window.clearInterval(intervalId);
   }, [ceremonyDate]);
 
   return (
@@ -216,7 +216,7 @@ function HomeScreen({ onOpen }) {
           <AppIcon appKey="invitation" label="초대장" onOpen={onOpen} />
           <AppIcon appKey="profile" label="우리 이야기" onOpen={onOpen} />
           <AppIcon appKey="gallery" label="갤러리" onOpen={onOpen} />
-          <AppIcon appKey="map" label="길 안내" onOpen={onOpen} />
+          <AppIcon appKey="map" label="예식장 안내" onOpen={onOpen} />
           <AppIcon appKey="guestbook" label="방명록" onOpen={onOpen} />
           <AppIcon appKey="account" label="축의금" onOpen={onOpen} />
           <AppIcon appKey="rsvp" label="참석 여부" onOpen={onOpen} />
@@ -224,16 +224,16 @@ function HomeScreen({ onOpen }) {
 
         <div className="home-dock">
           <button type="button" className="dock-button" onClick={() => onOpen('invitation')}>
-            <Mail size={22} />
+            <Mail size={20} strokeWidth={2.1} />
           </button>
           <button type="button" className="dock-button" onClick={() => onOpen('gallery')}>
-            <Camera size={22} />
+            <ImageIcon size={20} strokeWidth={2.1} />
           </button>
           <button type="button" className="dock-button" onClick={() => onOpen('map')}>
-            <MapPinned size={22} />
+            <MapPinned size={20} strokeWidth={2.1} />
           </button>
           <button type="button" className="dock-button" onClick={() => onOpen('rsvp')}>
-            <CalendarDays size={22} />
+            <CalendarDays size={20} strokeWidth={2.1} />
           </button>
         </div>
       </div>
@@ -241,104 +241,46 @@ function HomeScreen({ onOpen }) {
   );
 }
 
-function CountdownChip() {
-  const ceremonyDate = useMemo(
-    () =>
-      new Date(
-        weddingInfo.year,
-        weddingInfo.month - 1,
-        weddingInfo.day,
-        weddingInfo.hour,
-        weddingInfo.minute,
-        0
-      ),
-    []
-  );
-  const [remainingText, setRemainingText] = useState('');
-
-  useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date();
-      const diffMs = Math.max(0, ceremonyDate.getTime() - now.getTime());
-      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      setRemainingText(`D-${String(days).padStart(3, '0')}`);
-    };
-
-    updateCountdown();
-    const intervalId = window.setInterval(updateCountdown, 60000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [ceremonyDate]);
-
-  return (
-    <div className="countdown-chip">
-      <CalendarDays size={14} />
-      <span>{remainingText}</span>
-    </div>
-  );
-}
-
 function InvitationScreen() {
   const groomGivenName = weddingInfo.groom.name.slice(1);
   const brideGivenName = weddingInfo.bride.name.slice(1);
+  const invitationImage = weddingInfo.gallery[0]
+    ? `${import.meta.env.BASE_URL}${weddingInfo.gallery[0].src}`
+    : HERO_IMAGE;
 
   return (
     <div className="app-screen-content">
-      <ScreenTitle>초대장</ScreenTitle>
       <section className="screen-stack">
         <article className="ios-card hero-copy-card">
-          <p className="eyebrow-text">PARTY INVITATION</p>
-          <p className="party-copy-label">파티 모집 완료! 이제부터 같은 팀입니다.</p>
+          <div className="invitation-inline-image-wrap">
+            <img src={invitationImage} alt="" className="invitation-inline-image" />
+          </div>
           <h3 className="hero-main-copy">
             <span className="hero-main-copy-line">
-              <span className="hero-main-copy-name">{groomGivenName}</span>과
-              <span className="hero-main-copy-name"> {brideGivenName}</span>의
+              <span className="hero-main-copy-name">{groomGivenName}</span>
+              <span className="hero-main-copy-name">♥{brideGivenName}</span>의
             </span>
-            <span className="hero-main-copy-line">결혼식에 초대합니다.</span>
+            <span className="hero-main-copy-line">결혼식에 초대드립니다.</span>
           </h3>
           <p className="hero-sub-copy">
             {weddingInfo.dateLabel} {weddingInfo.timeLabel}
             <br />
             {weddingInfo.location.name}
           </p>
-          <CountdownChip />
         </article>
 
         <article className="ios-card text-card">
+          <p className="party-copy-label">파티 모집 완료! 이제부터 같은 팀입니다.</p>
           <div className="message-stack">
-            {HERO_MESSAGE_BLOCKS.map((line) => (
-              <p key={line.text} className={`message-block ${line.bold ? 'is-emphasis' : ''}`}>
-                {line.text.split('\n').map((segment, index) => (
-                  <React.Fragment key={`${line.text}-${segment}`}>
-                    {index > 0 ? <br /> : null}
-                    {segment}
-                  </React.Fragment>
-                ))}
-              </p>
+            {INVITATION_MESSAGE_HTML.map((line, index) => (
+              <p
+                key={`${line}-${index}`}
+                className={`message-block ${line.startsWith('*') ? 'is-emphasis' : ''}`}
+                dangerouslySetInnerHTML={{
+                  __html: line ? line.replace(/\*(.+)\*/, '$1') : '&nbsp;',
+                }}
+              />
             ))}
-          </div>
-        </article>
-
-        <article className="ios-card summary-grid-card">
-          <div className="summary-grid">
-            <div>
-              <p className="summary-label">예식일</p>
-              <p className="summary-value">{weddingInfo.dateLabel}</p>
-            </div>
-            <div>
-              <p className="summary-label">예식 시간</p>
-              <p className="summary-value">{weddingInfo.timeLabel}</p>
-            </div>
-            <div>
-              <p className="summary-label">예식장</p>
-              <p className="summary-value">{weddingInfo.location.name}</p>
-            </div>
-            <div>
-              <p className="summary-label">주소</p>
-              <p className="summary-value">{weddingInfo.location.address}</p>
-            </div>
           </div>
         </article>
       </section>
@@ -352,95 +294,129 @@ function ProfileScreen() {
 
   return (
     <div className="app-screen-content">
-      <ScreenTitle>우리 이야기</ScreenTitle>
       <section className="screen-stack">
-        <article className="ios-card profile-card">
-          <img
-            src={BRIDE_INTRO_IMAGE}
-            alt={`신부 ${weddingInfo.bride.name}`}
-            className="profile-image"
-          />
-          <div className="profile-copy">
-            <span className="profile-role">신부</span>
-            <h3>{brideGivenName}</h3>
-            <p>
-              {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}의 장녀
-            </p>
-            <p>{weddingInfo.bride.profile.birthDate}</p>
-            <div className="tag-list">
-              {weddingInfo.bride.profile.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-          </div>
-        </article>
-
-        <article className="ios-card profile-card">
-          <img
-            src={GROOM_INTRO_IMAGE}
-            alt={`신랑 ${weddingInfo.groom.name}`}
-            className="profile-image"
-          />
-          <div className="profile-copy">
-            <span className="profile-role">신랑</span>
-            <h3>{groomGivenName}</h3>
-            <p>
-              {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}의 장남
-            </p>
-            <p>{weddingInfo.groom.profile.birthDate}</p>
-            <div className="tag-list">
-              {weddingInfo.groom.profile.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-          </div>
-        </article>
-
-        <article className="ios-card">
-          <p className="card-caption">우리의 이야기</p>
-          <div className="story-list">
-            {weddingInfo.loveStory.slice(0, 3).map((item) => (
-              <div key={`${item.date}-${item.title}`} className="story-row">
-                <div className="story-dot" aria-hidden="true" />
-                <div>
-                  <p className="story-date">{item.date}</p>
-                  <p className="story-title">Q. {item.question}</p>
-                  <div className="story-answer-card">
-                    <p className="story-speaker">{groomGivenName}</p>
-                    <p className="story-desc">{item.groomAnswer}</p>
-                  </div>
-                  <div className="story-answer-card">
-                    <p className="story-speaker">{brideGivenName}</p>
-                    <p className="story-desc">{item.brideAnswer}</p>
-                  </div>
-                </div>
+        <div className="profile-duo-grid">
+          <article className="ios-card profile-card compact">
+            <img
+              src={GROOM_INTRO_IMAGE}
+              alt={`신랑 ${weddingInfo.groom.name}`}
+              className="profile-image"
+            />
+            <div className="profile-copy">
+              <span className="profile-role">신랑</span>
+              <h3>{groomGivenName}</h3>
+              <p>
+                {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}의 장남
+              </p>
+              <p>{weddingInfo.groom.profile.birthDate}</p>
+              <div className="tag-list">
+                {weddingInfo.groom.profile.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
               </div>
-            ))}
-          </div>
-        </article>
+            </div>
+          </article>
+
+          <article className="ios-card profile-card compact">
+            <img
+              src={BRIDE_INTRO_IMAGE}
+              alt={`신부 ${weddingInfo.bride.name}`}
+              className="profile-image"
+            />
+            <div className="profile-copy">
+              <span className="profile-role">신부</span>
+              <h3>{brideGivenName}</h3>
+              <p>
+                {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}의 장녀
+              </p>
+              <p>{weddingInfo.bride.profile.birthDate}</p>
+              <div className="tag-list">
+                {weddingInfo.bride.profile.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+            </div>
+          </article>
+        </div>
+
+        {weddingInfo.loveStory.slice(0, 3).map((item) => (
+          <article key={`${item.date}-${item.question}`} className="ios-card story-card">
+            <p className="story-question">Question</p>
+            <h3 className="story-title">{item.question}</h3>
+            {item.image ? (
+              <img
+                src={`${import.meta.env.BASE_URL}${item.image}`}
+                alt=""
+                className="story-feature-image"
+              />
+            ) : null}
+            <div className="story-answer-card">
+              <p className="story-speaker">{groomGivenName}</p>
+              <p className="story-desc">{item.groomAnswer}</p>
+            </div>
+            <div className="story-answer-card">
+              <p className="story-speaker">{brideGivenName}</p>
+              <p className="story-desc">{item.brideAnswer}</p>
+            </div>
+          </article>
+        ))}
       </section>
     </div>
   );
 }
 
 function GalleryScreen() {
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const images = weddingInfo.gallery.slice(0, 12);
+
+  const openViewer = (index) => setSelectedIndex(index);
+  const closeViewer = () => setSelectedIndex(-1);
+  const showPrev = () =>
+    setSelectedIndex((prev) => (prev <= 0 ? images.length - 1 : prev - 1));
+  const showNext = () =>
+    setSelectedIndex((prev) => (prev >= images.length - 1 ? 0 : prev + 1));
+
   return (
     <div className="app-screen-content">
-      <ScreenTitle>갤러리</ScreenTitle>
       <section className="screen-stack">
-        <div className="gallery-grid">
-          {weddingInfo.gallery.slice(0, 8).map((image, index) => (
-            <figure key={image.src} className={`gallery-tile ${index === 0 ? 'is-large' : ''}`}>
+        <div className="gallery-grid only-images">
+          {images.map((image, index) => (
+            <button
+              key={image.src}
+              type="button"
+              className={`gallery-tile button-tile ${index === 0 ? 'is-large' : ''}`}
+              onClick={() => openViewer(index)}
+            >
               <img
                 src={`${import.meta.env.BASE_URL}${image.src}`}
                 alt={image.caption}
                 className="gallery-photo"
                 loading="lazy"
               />
-              <figcaption>{image.caption}</figcaption>
-            </figure>
+            </button>
           ))}
         </div>
+
+        {selectedIndex >= 0 ? (
+          <div className="gallery-viewer-overlay" role="dialog" aria-modal="true">
+            <button type="button" className="gallery-viewer-close" onClick={closeViewer}>
+              <X size={20} />
+            </button>
+            <button type="button" className="gallery-viewer-nav left" onClick={showPrev}>
+              <ChevronLeft size={24} />
+            </button>
+            <div className="gallery-viewer-image-wrap">
+              <img
+                src={`${import.meta.env.BASE_URL}${images[selectedIndex].src}`}
+                alt={images[selectedIndex].caption}
+                className="gallery-viewer-image"
+              />
+            </div>
+            <button type="button" className="gallery-viewer-nav right" onClick={showNext}>
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        ) : null}
       </section>
     </div>
   );
@@ -451,10 +427,11 @@ function MapScreen() {
   const infoImage = infoTab === 'bride-room' ? BRIDE_ROOM_IMAGE : BANQUET_IMAGE;
 
   return (
-    <div className="app-screen-content">
-      <ScreenTitle>길 안내</ScreenTitle>
+    <div className="app-screen-content iphone-map-screen">
       <section className="screen-stack">
-        <Map />
+        <div className="map-embedded-card">
+          <Map />
+        </div>
         <article className="ios-card">
           <div className="segmented-tabs" role="tablist" aria-label="예식장 안내">
             <button
@@ -493,49 +470,185 @@ function MapScreen() {
 }
 
 function GuestbookScreen() {
+  const [messages, setMessages] = useState([]);
+  const [name, setName] = useState('');
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchedOffset, setFetchedOffset] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    const fetchMessages = async (offset, append) => {
+      if (!append) setFetching(true);
+      else setLoadingMore(true);
+
+      try {
+        const { data, error, count } = await supabase
+          .from('guestbook')
+          .select('*', { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .range(offset, offset + PAGE_SIZE - 1);
+
+        if (error) throw error;
+
+        const fetched = data || [];
+        setMessages((prev) => (append ? [...prev, ...fetched] : fetched));
+        setFetchedOffset(offset + fetched.length);
+        setTotalCount(count ?? 0);
+      } catch (error) {
+        console.error('Error fetching guestbook:', error.message);
+      } finally {
+        setFetching(false);
+        setLoadingMore(false);
+      }
+    };
+
+    fetchMessages(0, false);
+  }, []);
+
+  const handleLoadMore = async () => {
+    setLoadingMore(true);
+    try {
+      const { data, error, count } = await supabase
+        .from('guestbook')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(fetchedOffset, fetchedOffset + PAGE_SIZE - 1);
+
+      if (error) throw error;
+      const fetched = data || [];
+      setMessages((prev) => [...prev, ...fetched]);
+      setFetchedOffset((prev) => prev + fetched.length);
+      setTotalCount(count ?? 0);
+    } catch (error) {
+      console.error('Error loading more guestbook:', error.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!name.trim() || !content.trim()) return;
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('guestbook')
+        .insert([{ name: name.trim(), content: content.trim() }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setMessages((prev) => [data, ...prev]);
+        setTotalCount((prev) => prev + 1);
+      }
+
+      setName('');
+      setContent('');
+    } catch (error) {
+      console.error('Error adding message:', error.message);
+      window.alert('메시지 작성에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const hasMore = fetchedOffset < totalCount;
+
   return (
     <div className="app-screen-content">
-      <Guestbook />
+      <section className="screen-stack">
+        <article className="ios-card guestbook-card">
+          <form onSubmit={handleSubmit} className="guestbook-form-card">
+            <input
+              type="text"
+              placeholder="이름"
+              className="guestbook-input"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+            />
+            <textarea
+              placeholder="축하 메시지를 남겨주세요"
+              className="guestbook-input textarea"
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              required
+            />
+            <button type="submit" disabled={loading} className="guestbook-submit-button">
+              <Send size={16} />
+              {loading ? '보내는 중...' : '축하 메시지 보내기'}
+            </button>
+          </form>
+        </article>
+
+        <article className="ios-card guestbook-card">
+          {fetching ? (
+            <div className="guestbook-empty-state">로딩 중...</div>
+          ) : messages.length > 0 ? (
+            <div className="guestbook-message-list">
+              {messages.map((message) => (
+                <article key={message.id} className="guestbook-message-card">
+                  <div className="guestbook-message-head">
+                    <div className="guestbook-avatar">
+                      <User size={16} />
+                    </div>
+                    <div>
+                      <p className="guestbook-name">{message.name}</p>
+                      <p className="guestbook-date">
+                        {new Date(message.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="guestbook-body">{message.content}</p>
+                </article>
+              ))}
+              {hasMore ? (
+                <button
+                  type="button"
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  className="guestbook-more-button"
+                >
+                  {loadingMore ? '불러오는 중...' : `더보기 (${totalCount - fetchedOffset})`}
+                </button>
+              ) : null}
+            </div>
+          ) : (
+            <div className="guestbook-empty-state with-icon">
+              <MessageCircleMore size={24} />
+              <span>첫 번째 축하 메시지를 남겨주세요.</span>
+            </div>
+          )}
+        </article>
+      </section>
     </div>
   );
 }
 
-function AccountSection({ title, people }) {
-  const [open, setOpen] = useState(false);
-  const [copiedValue, setCopiedValue] = useState('');
-
-  const handleCopy = async (account) => {
-    try {
-      await navigator.clipboard.writeText(account);
-      setCopiedValue(account);
-      window.setTimeout(() => setCopiedValue(''), 1500);
-    } catch (error) {
-      console.error('계좌 복사 실패:', error);
-    }
-  };
-
+function AccountContent({ title, people }) {
   return (
     <article className="ios-card">
-      <button type="button" className="account-toggle" onClick={() => setOpen((prev) => !prev)}>
-        <span>{title}</span>
-        <ChevronDown size={18} className={open ? 'rotate-180' : ''} />
-      </button>
-      {open ? (
-        <div className="account-list">
-          {people.map((person) => (
-            <div key={`${title}-${person.label}`} className="account-row">
-              <div>
-                <p className="account-label">{person.label}</p>
-                <p className="account-name">{person.name}</p>
-                <p className="account-number">{person.account}</p>
-              </div>
-              <button type="button" className="copy-button" onClick={() => handleCopy(person.account)}>
-                {copiedValue === person.account ? '복사됨' : '복사'}
-              </button>
+      <div className="account-static-title">{title}</div>
+      <div className="account-list always-open">
+        {people.map((person, index) => (
+          <div
+            key={`${title}-${person.label}`}
+            className={`account-row ${index === 0 ? 'first-row' : ''}`}
+          >
+            <div>
+              <p className="account-label">{person.label}</p>
+              <p className="account-name">{person.name}</p>
+              <p className="account-number">{person.account}</p>
             </div>
-          ))}
-        </div>
-      ) : null}
+          </div>
+        ))}
+      </div>
     </article>
   );
 }
@@ -543,7 +656,6 @@ function AccountSection({ title, people }) {
 function AccountScreen() {
   return (
     <div className="app-screen-content">
-      <ScreenTitle>축의금</ScreenTitle>
       <section className="screen-stack">
         <article className="ios-card text-card">
           <p className="message-block small">
@@ -553,7 +665,7 @@ function AccountScreen() {
           </p>
         </article>
 
-        <AccountSection
+        <AccountContent
           title="신랑측"
           people={[
             { label: '신랑', name: weddingInfo.groom.name, account: weddingInfo.groom.account },
@@ -562,7 +674,7 @@ function AccountScreen() {
           ]}
         />
 
-        <AccountSection
+        <AccountContent
           title="신부측"
           people={[
             { label: '신부', name: weddingInfo.bride.name, account: weddingInfo.bride.account },
@@ -630,7 +742,6 @@ function AttendanceScreen() {
 
   return (
     <div className="app-screen-content">
-      <ScreenTitle>참석 여부</ScreenTitle>
       <section className="screen-stack">
         <article className="ios-card text-card">
           <p className="message-block small">
@@ -781,6 +892,8 @@ function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
   const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
+  const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
+  const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
 
   useEffect(() => {
     document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
@@ -793,11 +906,8 @@ function App() {
 
       if (!element) {
         element = document.createElement('meta');
-        if (property) {
-          element.setAttribute('property', name);
-        } else {
-          element.setAttribute('name', name);
-        }
+        if (property) element.setAttribute('property', name);
+        else element.setAttribute('name', name);
         document.head.appendChild(element);
       }
 
@@ -814,7 +924,6 @@ function App() {
   useEffect(() => {
     document.body.classList.add('iphone-body-lock');
     document.documentElement.classList.add('iphone-html-lock');
-
     return () => {
       document.body.classList.remove('iphone-body-lock');
       document.documentElement.classList.remove('iphone-html-lock');
@@ -856,8 +965,8 @@ function App() {
                 <X size={18} />
               </button>
               <div className="opened-app-title">
-                <MoonStar size={14} />
-                <span>iPhone Invitation</span>
+                <ActiveAppIcon size={18} strokeWidth={2.1} />
+                <span>{activeAppTitle}</span>
               </div>
               <div className="opened-app-spacer" />
             </div>
