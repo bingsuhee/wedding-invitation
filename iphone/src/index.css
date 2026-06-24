@@ -176,6 +176,11 @@ body.iphone-body-lock {
   gap: 14px;
   align-items: end;
   justify-items: center;
+  transition: transform 0.2s ease;
+}
+
+.lock-bottom-stack.is-dragging {
+  transition: none;
 }
 
 .lock-date {
@@ -187,7 +192,7 @@ body.iphone-body-lock {
 }
 
 .lock-time {
-  margin: 10px 0 0;
+  margin: 4px 0 0;
   font-size: clamp(78px, 22vw, 114px);
   font-weight: 700;
   line-height: 0.92;
@@ -216,7 +221,7 @@ body.iphone-body-lock {
     0 20px 36px rgba(0, 0, 0, 0.16);
   backdrop-filter: blur(20px);
   text-align: left;
-  animation: lock-widget-notice-in 0.62s cubic-bezier(0.2, 0.8, 0.2, 1) 1s both;
+  animation: lock-widget-notice-in 0.62s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s both;
 }
 
 .lock-widget-meta {
@@ -261,12 +266,10 @@ body.iphone-body-lock {
   gap: 10px;
   padding: 12px 16px 2px;
   color: #fff;
-  transition: transform 0.2s ease;
-  animation: swipe-nudge 1.8s ease-in-out infinite;
+  animation: swipe-nudge 1.35s ease-in-out infinite;
 }
 
-.swipe-unlock.is-dragging {
-  transition: none;
+.lock-bottom-stack.is-dragging .swipe-unlock {
   animation: none;
 }
 
@@ -300,6 +303,17 @@ body.iphone-body-lock {
   animation: widget-float-in 0.52s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.home-widget-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 14px;
+  align-items: center;
+}
+
+.home-widget-copy {
+  min-width: 0;
+}
+
 .home-widget-label {
   margin: 0;
   font-size: 12px;
@@ -310,9 +324,14 @@ body.iphone-body-lock {
 
 .home-widget-card h2 {
   margin: 6px 0 0;
-  font-size: 25px;
-  line-height: 1.18;
+  font-size: 22px;
+  line-height: 1.26;
   letter-spacing: -0.05em;
+}
+
+.widget-heart-text {
+  color: #fff;
+  font-weight: 700;
 }
 
 .home-widget-card p {
@@ -320,6 +339,25 @@ body.iphone-body-lock {
   font-size: 13px;
   line-height: 1.6;
   opacity: 0.92;
+}
+
+.home-widget-image-wrap {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 12px 22px rgba(0, 0, 0, 0.12);
+}
+
+.home-widget-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .home-bottom-stack {
@@ -1061,12 +1099,16 @@ body.iphone-body-lock {
     transform: translateY(0);
   }
 
-  35% {
-    transform: translateY(-8px);
+  25% {
+    transform: translateY(-6px);
   }
 
-  65% {
-    transform: translateY(4px);
+  50% {
+    transform: translateY(-10px);
+  }
+
+  75% {
+    transform: translateY(-4px);
   }
 }
 
@@ -1085,6 +1127,11 @@ body.iphone-body-lock {
 @media (max-width: 420px) {
   .iphone-page-shell {
     padding: 0;
+  }
+
+  .home-widget-content {
+    grid-template-columns: minmax(0, 1fr) 84px;
+    gap: 12px;
   }
 
   .home-app-grid {

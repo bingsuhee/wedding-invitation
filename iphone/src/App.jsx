@@ -126,7 +126,10 @@ function LockScreen({ onUnlock }) {
         <p className="lock-time">{lockTimeLabel}</p>
       </div>
 
-      <div className="lock-bottom-stack">
+      <div
+        className={`lock-bottom-stack ${isDragging ? 'is-dragging' : ''}`}
+        style={{ transform: `translateY(${-swipeOffset}px)` }}
+      >
         <div className="lock-widget-card">
           <div className="lock-widget-meta">
             <p className="lock-widget-label">Wedding invitation</p>
@@ -142,8 +145,7 @@ function LockScreen({ onUnlock }) {
 
         <button
           type="button"
-          className={`swipe-unlock ${isDragging ? 'is-dragging' : ''}`}
-          style={{ transform: `translateY(${-swipeOffset}px)` }}
+          className="swipe-unlock"
           onPointerDown={handlePointerDown}
           onClick={onUnlock}
           aria-label="위로 스와이프해 잠금 해제"
@@ -160,12 +162,53 @@ function LockScreen({ onUnlock }) {
 }
 
 function HomeScreen({ onOpen }) {
+  const ceremonyDate = useMemo(
+    () =>
+      new Date(
+        weddingInfo.year,
+        weddingInfo.month - 1,
+        weddingInfo.day,
+        weddingInfo.hour,
+        weddingInfo.minute,
+        0
+      ),
+    []
+  );
+  const [remainingDaysText, setRemainingDaysText] = useState('000');
+
+  useEffect(() => {
+    const updateRemainingDays = () => {
+      const now = new Date();
+      const diffMs = Math.max(0, ceremonyDate.getTime() - now.getTime());
+      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      setRemainingDaysText(String(days).padStart(3, '0'));
+    };
+
+    updateRemainingDays();
+    const intervalId = window.setInterval(updateRemainingDays, 60000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [ceremonyDate]);
+
   return (
     <div className="home-screen">
       <div className="home-widget-card">
-        <p className="home-widget-label">Wedding invitation</p>
-        <h2>{`${weddingInfo.groom.name} ♥ ${weddingInfo.bride.name}`}</h2>
-        <p>아이콘을 눌러 결혼식의 상세 정보를 확인해보세요!</p>
+        <div className="home-widget-content">
+          <div className="home-widget-copy">
+            <p className="home-widget-label">Notice</p>
+            <h2>
+              수빈<span className="widget-heart-text">♥</span>소희 결혼식까지
+              <br />
+              {remainingDaysText}일 남았습니다.
+            </h2>
+            <p>앱 아이콘을 눌러 상세 정보를 확인하세요</p>
+          </div>
+          <div className="home-widget-image-wrap" aria-hidden="true">
+            <img src={HERO_IMAGE} alt="" className="home-widget-image" />
+          </div>
+        </div>
       </div>
 
       <div className="home-bottom-stack">
