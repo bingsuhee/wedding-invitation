@@ -1203,6 +1203,20 @@ body.iphone-body-lock {
   transform: rotate(180deg);
 }
 
+/* 로딩 화면 — 디자인은 이 클래스 안에 자유롭게 추가 */
+.preload-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0b131c;
+  transition: opacity 0.4s ease;
+}
+
+.preload-screen.is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
 @keyframes app-shell-in {
   from {
     opacity: 0;
