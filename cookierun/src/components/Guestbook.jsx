@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MessageSquare, Send, User } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '@shared/lib/supabaseClient';
 
 const PAGE_SIZE = 10;
 

@@ -17,9 +17,11 @@ import {
   WalletCards,
   X,
 } from 'lucide-react';
-import { supabase } from './lib/supabaseClient';
-import { weddingInfo } from '@shared/data/info';
 import Map from '../../cookierun/src/components/Map';
+import { supabase } from '@shared/lib/supabaseClient';
+import { weddingInfo } from '@shared/data/info';
+import { WebpImage } from '@shared/components/WebpImage';
+import { toWebpSrc } from '@shared/lib/image';
 
 const HERO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-hero.png`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
@@ -206,7 +208,7 @@ function HomeScreen({ onOpen }) {
             <p>앱 아이콘을 눌러 상세 정보를 확인하세요</p>
           </div>
           <div className="home-widget-image-wrap" aria-hidden="true">
-            <img src={HERO_IMAGE} alt="" className="home-widget-image" />
+            <WebpImage src={HERO_IMAGE} alt="" className="home-widget-image" fetchPriority="high" />
           </div>
         </div>
       </div>
@@ -297,7 +299,7 @@ function ProfileScreen() {
       <section className="screen-stack">
         <div className="profile-duo-grid">
           <article className="ios-card profile-card compact">
-            <img
+            <WebpImage
               src={GROOM_INTRO_IMAGE}
               alt={`신랑 ${weddingInfo.groom.name}`}
               className="profile-image"
@@ -318,7 +320,7 @@ function ProfileScreen() {
           </article>
 
           <article className="ios-card profile-card compact">
-            <img
+            <WebpImage
               src={BRIDE_INTRO_IMAGE}
               alt={`신부 ${weddingInfo.bride.name}`}
               className="profile-image"
@@ -344,10 +346,11 @@ function ProfileScreen() {
             <p className="story-question">Question</p>
             <h3 className="story-title">{item.question}</h3>
             {item.image ? (
-              <img
+              <WebpImage
                 src={`${import.meta.env.BASE_URL}${item.image}`}
                 alt=""
                 className="story-feature-image"
+                loading="lazy"
               />
             ) : null}
             <div className="story-answer-card">
@@ -387,7 +390,7 @@ function GalleryScreen() {
               className={`gallery-tile button-tile ${index === 0 ? 'is-large' : ''}`}
               onClick={() => openViewer(index)}
             >
-              <img
+              <WebpImage
                 src={`${import.meta.env.BASE_URL}${image.src}`}
                 alt={image.caption}
                 className="gallery-photo"
@@ -406,7 +409,7 @@ function GalleryScreen() {
               <ChevronLeft size={24} />
             </button>
             <div className="gallery-viewer-image-wrap">
-              <img
+              <WebpImage
                 src={`${import.meta.env.BASE_URL}${images[selectedIndex].src}`}
                 alt={images[selectedIndex].caption}
                 className="gallery-viewer-image"
@@ -449,7 +452,7 @@ function MapScreen() {
               피로연장
             </button>
           </div>
-          <img src={infoImage} alt="" className="info-photo" />
+          <WebpImage src={infoImage} alt="" className="info-photo" />
           <div className="info-copy">
             {infoTab === 'bride-room' ? (
               <>
@@ -945,7 +948,7 @@ function App() {
       <main
         className={`phone-screen mobile-phone-screen is-stage-${currentStage} ${activeApp ? 'is-detail-open' : ''}`}
         style={{
-          backgroundImage: `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${HERO_IMAGE})`,
+          backgroundImage: `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${toWebpSrc(HERO_IMAGE)})`,
         }}
       >
         <PhoneStatus />

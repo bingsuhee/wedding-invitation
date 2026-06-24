@@ -4,7 +4,7 @@ import Guestbook from './components/Guestbook';
 import Map from './components/Map';
 import ScrollAnimationWrapper from './components/ScrollAnimationWrapper';
 import { weddingInfo } from '@shared/data/info';
-import { supabase } from './lib/supabaseClient';
+import { supabase } from '@shared/lib/supabaseClient';
 
 const INTRO_DURATION_MS = 2000;
 const INTRO_DOT_INTERVAL_MS = INTRO_DURATION_MS / 9;
