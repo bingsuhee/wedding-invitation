@@ -30,6 +30,7 @@ const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
 const GROOM_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-groom.png`;
 const PAGE_SIZE = 10;
+const OPENING_PRELOAD_MIN_MS = 1200;
 const INVITATION_MESSAGE_HTML = [
   '긴 여정 끝에 최고의 파티원을 만났습니다.',
   '인생의 솔로 플레이를 마치고,<br />이제는 둘이 함께 새로운 퀘스트에 도전합니다.',
@@ -90,6 +91,16 @@ function PhoneStatus() {
         <span className="battery-pill">
           <span className="battery-fill" />
         </span>
+      </div>
+    </div>
+  );
+}
+
+function LoadingScreen() {
+  return (
+    <div className="loading-screen" aria-label="Opening screen">
+      <div className="loading-spinner-wrap">
+        <div className="loading-spinner" />
       </div>
     </div>
   );
@@ -1074,11 +1085,12 @@ function MapScreenEnhanced() {
 }
 
 function App() {
+  const [isBooting, setIsBooting] = useState(true);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
   const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(-1);
   const galleryImages = useMemo(() => weddingInfo.gallery.slice(0, 12), []);
-  const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
+  const currentStage = isBooting ? 'loading' : !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
 
@@ -1095,11 +1107,11 @@ function App() {
       ]);
 
       const elapsed = window.performance.now() - startedAt;
-      const remaining = Math.max(0, 1200 - elapsed);
+      const remaining = Math.max(0, OPENING_PRELOAD_MIN_MS - elapsed);
 
       window.setTimeout(() => {
         if (isMounted) {
-          setIsPreloading(false);
+          setIsBooting(false);
         }
       }, remaining);
     };
@@ -1167,7 +1179,7 @@ function App() {
     invitation: <InvitationScreen />,
     profile: <ProfileScreen />,
     gallery: <GalleryScreen onOpenViewer={setSelectedGalleryIndex} />,
-    map: <MapScreenEnhanced />,
+    map: <MapScreen />,
     guestbook: <GuestbookScreen />,
     account: <AccountScreen />,
     rsvp: <AttendanceScreen />,
@@ -1175,11 +1187,6 @@ function App() {
 
   return (
     <div className="iphone-page-shell">
-      <div className={`preload-screen${isPreloading ? '' : ' is-done'}`} aria-hidden={!isPreloading}>
-        <div className="preload-spinner-wrap">
-          <div className="preload-spinner" />
-        </div>
-      </div>
       <main
         className={`phone-screen mobile-phone-screen is-stage-${currentStage} ${activeApp ? 'is-detail-open' : ''}`}
         style={{
@@ -1188,7 +1195,11 @@ function App() {
       >
         <PhoneStatus />
 
-        {!isUnlocked ? (
+        {isBooting ? (
+          <div className="stage-panel stage-panel-loading" key="loading">
+            <LoadingScreen />
+          </div>
+        ) : !isUnlocked ? (
           <div className="stage-panel stage-panel-lock" key="lock">
             <LockScreen onUnlock={() => setIsUnlocked(true)} />
           </div>
