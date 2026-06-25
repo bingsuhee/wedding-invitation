@@ -30,7 +30,6 @@ const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
 const GROOM_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-groom.png`;
 const PAGE_SIZE = 10;
-const OPENING_PRELOAD_MIN_MS = 1200;
 const INVITATION_MESSAGE_HTML = [
   '긴 여정 끝에 최고의 파티원을 만났습니다.',
   '인생의 솔로 플레이를 마치고,<br />이제는 둘이 함께 새로운 퀘스트에 도전합니다.',
@@ -58,15 +57,6 @@ const APP_TITLES = {
   rsvp: '참석 여부',
 };
 
-function preloadImage(src) {
-  return new Promise((resolve) => {
-    const image = new Image();
-    image.onload = () => resolve();
-    image.onerror = () => resolve();
-    image.src = toWebpSrc(src);
-  });
-}
-
 function AppIcon({ appKey, label, onOpen }) {
   const Icon = APP_ICONS[appKey];
 
@@ -91,16 +81,6 @@ function PhoneStatus() {
         <span className="battery-pill">
           <span className="battery-fill" />
         </span>
-      </div>
-    </div>
-  );
-}
-
-function LoadingScreen() {
-  return (
-    <div className="loading-screen" aria-label="Opening screen">
-      <div className="loading-spinner-wrap">
-        <div className="loading-spinner" />
       </div>
     </div>
   );
@@ -1085,43 +1065,13 @@ function MapScreenEnhanced() {
 }
 
 function App() {
-  const [isBooting, setIsBooting] = useState(true);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
   const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(-1);
   const galleryImages = useMemo(() => weddingInfo.gallery.slice(0, 12), []);
-  const currentStage = isBooting ? 'loading' : !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
+  const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const prepareOpening = async () => {
-      const startedAt = window.performance.now();
-
-      await Promise.allSettled([
-        preloadImage(HERO_IMAGE),
-        preloadImage(BRIDE_INTRO_IMAGE),
-        preloadImage(GROOM_INTRO_IMAGE),
-      ]);
-
-      const elapsed = window.performance.now() - startedAt;
-      const remaining = Math.max(0, OPENING_PRELOAD_MIN_MS - elapsed);
-
-      window.setTimeout(() => {
-        if (isMounted) {
-          setIsBooting(false);
-        }
-      }, remaining);
-    };
-
-    prepareOpening();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   useEffect(() => {
     document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
@@ -1195,11 +1145,7 @@ function App() {
       >
         <PhoneStatus />
 
-        {isBooting ? (
-          <div className="stage-panel stage-panel-loading" key="loading">
-            <LoadingScreen />
-          </div>
-        ) : !isUnlocked ? (
+        {!isUnlocked ? (
           <div className="stage-panel stage-panel-lock" key="lock">
             <LockScreen onUnlock={() => setIsUnlocked(true)} />
           </div>

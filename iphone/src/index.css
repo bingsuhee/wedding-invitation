@@ -1312,28 +1312,6 @@ body.gallery-viewer-open {
 }
 
 /* 로딩 화면 — 디자인은 이 클래스 안에 자유롭게 추가 */
-.loading-screen {
-  display: grid;
-  height: 100%;
-  place-items: center;
-  background: #f7efe5;
-  animation: app-shell-in 0.24s ease;
-}
-
-.loading-spinner-wrap {
-  display: grid;
-  place-items: center;
-}
-
-.loading-spinner {
-  width: 44px;
-  height: 44px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
-  border-top-color: rgba(255, 255, 255, 0.92);
-  border-radius: 999px;
-  animation: preload-spinner-spin 0.9s linear infinite;
-}
-
 @keyframes app-shell-in {
   from {
     opacity: 0;
