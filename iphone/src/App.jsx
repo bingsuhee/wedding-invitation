@@ -29,6 +29,7 @@ const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
 const GROOM_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-groom.png`;
+const PARTY_TEAM_IMAGE = `${import.meta.env.BASE_URL}images/party-team.png`;
 const PAGE_SIZE = 10;
 const INVITATION_MESSAGE_HTML = [
   '긴 여정 끝에 최고의 파티원을 만났습니다.',
@@ -298,6 +299,9 @@ function InvitationScreen() {
         </article>
 
         <article className="ios-card text-card">
+          <div className="party-inline-image-wrap">
+            <img src={PARTY_TEAM_IMAGE} alt="" className="party-inline-image" />
+          </div>
           <p className="party-copy-label">파티 모집 완료! 이제부터 같은 팀입니다.</p>
           <div className="message-stack">
             {INVITATION_MESSAGE_HTML.map((line, index) => (
@@ -569,10 +573,6 @@ function MapScreen() {
                 <p>다양한 뷔페 메뉴와 음료 코너를 편하게 즐겨주세요.</p>
               </>
             )}
-          </div>
-          <div className="venue-copy">
-            <p className="venue-name">{weddingInfo.location.name}</p>
-            <p className="venue-address">{weddingInfo.location.address}</p>
           </div>
         </article>
       </section>
@@ -1064,6 +1064,142 @@ function MapScreenEnhanced() {
   );
 }
 
+function MapScreenLegacy() {
+  const [infoTab, setInfoTab] = useState('bride-room');
+  const infoImage = infoTab === 'bride-room' ? BRIDE_ROOM_IMAGE : BANQUET_IMAGE;
+
+  return (
+    <div className="app-screen-content iphone-map-screen">
+      <section className="screen-stack">
+        <div className="map-embedded-card">
+          <Map />
+        </div>
+        <article className="ios-card">
+          <div className="segmented-tabs" role="tablist" aria-label="예식장 안내">
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'bride-room' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('bride-room')}
+            >
+              신부대기실
+            </button>
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'banquet' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('banquet')}
+            >
+              피로연장
+            </button>
+          </div>
+          <WebpImage src={infoImage} alt="" className="info-photo" />
+          <div className="info-copy">
+            {infoTab === 'bride-room' ? (
+              <>
+                <p>
+                  <strong>신부대기실은 옆 계단으로 올라오셔야 합니다.</strong>
+                </p>
+                <p>
+                  계단을 이용하시기 어려우신 분들은
+                  <br />
+                  직원 안내에 따라 엘리베이터로 올라오실 수 있어요.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  연회장은 예식장 바로 옆에 위치하고 있습니다.
+                  <br />
+                  연회장은 예식 30분 전부터 이용 가능합니다.
+                </p>
+                <p>180여 가지의 뷔페식이고, 음주류도 있으니 맘껏 즐겨주세요.</p>
+                <p>
+                  <strong>특히 이 메뉴는 놓치지 마세요!</strong>
+                </p>
+                <ul>
+                  <li>LA 갈비를 포함한 모든 고기 메뉴</li>
+                  <li>전복갈비탕, 설렁탕, 도가니탕</li>
+                  <li>육회는 꼭 노른자를 곁들여서</li>
+                  <li>파스타는 바로 만들어서 신선</li>
+                  <li>젤라또는 와플이랑 같이</li>
+                  <li>사케 + 냉면 꿀조합 / 와인은 반반 믹스 추천</li>
+                </ul>
+              </>
+            )}
+          </div>
+        </article>
+      </section>
+    </div>
+  );
+}
+
+function MapScreenEnhancedLegacy() {
+  const [infoTab, setInfoTab] = useState('bride-room');
+  const infoImage = infoTab === 'bride-room' ? BRIDE_ROOM_IMAGE : BANQUET_IMAGE;
+
+  return (
+    <div className="app-screen-content iphone-map-screen">
+      <section className="screen-stack">
+        <div className="map-embedded-card">
+          <Map />
+        </div>
+        <article className="ios-card">
+          <div className="segmented-tabs" role="tablist" aria-label="예식장 안내">
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'bride-room' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('bride-room')}
+            >
+              신부대기실
+            </button>
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'banquet' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('banquet')}
+            >
+              피로연장
+            </button>
+          </div>
+          <WebpImage src={infoImage} alt="" className="info-photo" />
+          <div className="info-copy">
+            {infoTab === 'bride-room' ? (
+              <>
+                <p>
+                  <strong>신부대기실은 옆 계단으로 올라오셔야 합니다.</strong>
+                </p>
+                <p>
+                  계단을 이용하시기 어려우신 분들은
+                  <br />
+                  직원 안내에 따라 엘리베이터로 올라오실 수 있어요.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  연회장은 예식장 바로 옆에 위치하고 있습니다.
+                  <br />
+                  연회장은 예식 30분 전부터 이용 가능합니다.
+                </p>
+                <p>180여 가지의 뷔페식이고, 음주류도 있으니 맘껏 즐겨주세요.</p>
+                <p>
+                  <strong>특히 이 메뉴는 놓치지 마세요!</strong>
+                </p>
+                <ul>
+                  <li>LA 갈비를 포함한 모든 고기 메뉴</li>
+                  <li>전복갈비탕, 설렁탕, 도가니탕</li>
+                  <li>육회는 꼭 노른자를 곁들여서</li>
+                  <li>파스타는 바로 만들어서 신선</li>
+                  <li>젤라또는 와플이랑 같이</li>
+                  <li>사케 + 냉면 꿀조합 / 와인은 반반 믹스 추천</li>
+                </ul>
+              </>
+            )}
+          </div>
+        </article>
+      </section>
+    </div>
+  );
+}
+
 function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
@@ -1129,7 +1265,7 @@ function App() {
     invitation: <InvitationScreen />,
     profile: <ProfileScreen />,
     gallery: <GalleryScreen onOpenViewer={setSelectedGalleryIndex} />,
-    map: <MapScreen />,
+    map: <MapScreenLegacy />,
     guestbook: <GuestbookScreen />,
     account: <AccountScreen />,
     rsvp: <AttendanceScreen />,
