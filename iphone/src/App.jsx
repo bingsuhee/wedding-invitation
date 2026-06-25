@@ -947,20 +947,11 @@ function AttendanceScreen() {
 }
 
 function App() {
-  const [isPreloading, setIsPreloading] = useState(true);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
   const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
-
-  useEffect(() => {
-    [BRIDE_INTRO_IMAGE, GROOM_INTRO_IMAGE].forEach((src) => {
-      new Image().src = toWebpSrc(src);
-    });
-    const timer = window.setTimeout(() => setIsPreloading(false), 1800);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
@@ -1009,7 +1000,6 @@ function App() {
 
   return (
     <div className="iphone-page-shell">
-      <div className={`preload-screen${isPreloading ? '' : ' is-done'}`} aria-hidden="true" />
       <main
         className={`phone-screen mobile-phone-screen is-stage-${currentStage} ${activeApp ? 'is-detail-open' : ''}`}
         style={{
