@@ -13,7 +13,7 @@
 
   html {
     min-height: 100%;
-    background: #0b131c;
+    background: #f7efe5;
   }
 
   body {
@@ -21,7 +21,7 @@
     min-height: 100%;
     font-family: var(--font-base);
     color: #1d1a17;
-    background: #0b131c;
+    background: #f7efe5;
     overflow-x: hidden;
   }
 
@@ -55,7 +55,7 @@ body.gallery-viewer-open {
 .iphone-page-shell {
   min-height: 100dvh;
   padding: 0;
-  background: #0b131c;
+  background: #f7efe5;
 }
 
 .phone-screen {
@@ -1316,6 +1316,7 @@ body.gallery-viewer-open {
   display: grid;
   height: 100%;
   place-items: center;
+  background: #f7efe5;
   animation: app-shell-in 0.24s ease;
 }
 
