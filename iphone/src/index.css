@@ -13,9 +13,7 @@
 
   html {
     min-height: 100%;
-    background:
-      radial-gradient(circle at top, rgba(255, 214, 176, 0.8), transparent 36%),
-      linear-gradient(180deg, #f3e5d4 0%, #e6d2bf 48%, #dcc5b4 100%);
+    background: #0b131c;
   }
 
   body {
@@ -23,7 +21,7 @@
     min-height: 100%;
     font-family: var(--font-base);
     color: #1d1a17;
-    background: transparent;
+    background: #0b131c;
     overflow-x: hidden;
   }
 
@@ -49,9 +47,15 @@ body.iphone-body-lock {
   overflow: hidden;
 }
 
+html.gallery-viewer-open,
+body.gallery-viewer-open {
+  overflow: hidden;
+}
+
 .iphone-page-shell {
   min-height: 100dvh;
   padding: 0;
+  background: #0b131c;
 }
 
 .phone-screen {
@@ -855,48 +859,58 @@ body.iphone-body-lock {
 .gallery-viewer-overlay {
   position: fixed;
   inset: 0;
-  z-index: 30;
+  z-index: 10001;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.84);
+  padding: 24px 18px;
+  background: rgba(0, 0, 0, 0.94);
+  backdrop-filter: blur(12px);
+  animation: gallery-viewer-fade-in 0.24s ease;
 }
 
 .gallery-viewer-image-wrap {
-  width: min(100vw - 88px, 720px);
-  max-height: calc(100dvh - 88px);
+  display: grid;
+  gap: 14px;
+  width: min(100vw - 72px, 720px);
+  max-height: calc(100dvh - 72px);
+  justify-items: center;
 }
 
 .gallery-viewer-image {
   width: 100%;
-  max-height: calc(100dvh - 88px);
+  max-height: calc(100dvh - 132px);
   object-fit: contain;
+  border-radius: 24px;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.34);
 }
 
-.gallery-viewer-close,
+.gallery-viewer-close-button,
 .gallery-viewer-nav {
   position: fixed;
-  z-index: 31;
+  z-index: 10002;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
 }
 
-.gallery-viewer-close {
-  top: 22px;
-  right: 22px;
-  width: 40px;
-  height: 40px;
+.gallery-viewer-close-button {
+  top: max(18px, env(safe-area-inset-top, 0px) + 10px);
+  right: max(18px, env(safe-area-inset-right, 0px) + 14px);
+  width: 46px;
+  height: 46px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
 }
 
 .gallery-viewer-nav {
   top: 50%;
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   transform: translateY(-50%);
 }
 
@@ -906,6 +920,14 @@ body.iphone-body-lock {
 
 .gallery-viewer-nav.right {
   right: 18px;
+}
+
+.gallery-viewer-caption {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .soft-input {
@@ -957,37 +979,32 @@ body.iphone-body-lock {
   display: none;
 }
 
+.iphone-map-screen .section-lead {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.iphone-map-screen .section-lead-title {
+  margin: 0;
+  color: #1d1713;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.iphone-map-screen .section-lead p:last-child {
+  margin: 0;
+  color: rgba(29, 25, 21, 0.62);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .info-copy {
   display: grid;
   gap: 10px;
   margin-top: 14px;
-}
-
-.venue-copy {
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  margin-top: 18px;
-  text-align: center;
-}
-
-.venue-name,
-.venue-address {
-  margin: 0;
-}
-
-.venue-name {
-  color: #1d1713;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.5;
-}
-
-.venue-address {
-  color: rgba(29, 25, 21, 0.62);
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1.5;
 }
 
 .account-static-title {
@@ -1300,12 +1317,28 @@ body.iphone-body-lock {
   inset: 0;
   z-index: 9999;
   background: #0b131c;
+  display: grid;
+  place-items: center;
   transition: opacity 0.4s ease;
 }
 
 .preload-screen.is-done {
   opacity: 0;
   pointer-events: none;
+}
+
+.preload-spinner-wrap {
+  display: grid;
+  place-items: center;
+}
+
+.preload-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  animation: preload-spinner-spin 0.9s linear infinite;
 }
 
 @keyframes app-shell-in {
@@ -1435,6 +1468,26 @@ body.iphone-body-lock {
   }
 }
 
+@keyframes gallery-viewer-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes preload-spinner-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 420px) {
   .iphone-page-shell {
     padding: 0;
@@ -1474,5 +1527,18 @@ body.iphone-body-lock {
 
   .gallery-viewer-image-wrap {
     width: min(100vw - 52px, 720px);
+  }
+
+  .gallery-viewer-nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .gallery-viewer-nav.left {
+    left: 10px;
+  }
+
+  .gallery-viewer-nav.right {
+    right: 10px;
   }
 }

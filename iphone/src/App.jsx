@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CalendarDays,
   Camera,
@@ -56,6 +56,15 @@ const APP_TITLES = {
   account: '축의금',
   rsvp: '참석 여부',
 };
+
+function preloadImage(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve();
+    image.onerror = () => resolve();
+    image.src = toWebpSrc(src);
+  });
+}
 
 function AppIcon({ appKey, label, onOpen }) {
   const Icon = APP_ICONS[appKey];
@@ -398,16 +407,8 @@ function ProfileScreen() {
   );
 }
 
-function GalleryScreen() {
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+function GalleryScreen({ onOpenViewer }) {
   const images = weddingInfo.gallery.slice(0, 12);
-
-  const openViewer = (index) => setSelectedIndex(index);
-  const closeViewer = () => setSelectedIndex(-1);
-  const showPrev = () =>
-    setSelectedIndex((prev) => (prev <= 0 ? images.length - 1 : prev - 1));
-  const showNext = () =>
-    setSelectedIndex((prev) => (prev >= images.length - 1 ? 0 : prev + 1));
 
   return (
     <div className="app-screen-content">
@@ -418,7 +419,7 @@ function GalleryScreen() {
               key={image.src}
               type="button"
               className={`gallery-tile button-tile ${index === 0 ? 'is-large' : ''}`}
-              onClick={() => openViewer(index)}
+              onClick={() => onOpenViewer(index)}
             >
               <WebpImage
                 src={`${import.meta.env.BASE_URL}${image.src}`}
@@ -429,28 +430,110 @@ function GalleryScreen() {
             </button>
           ))}
         </div>
-
-        {selectedIndex >= 0 ? (
-          <div className="gallery-viewer-overlay" role="dialog" aria-modal="true">
-            <button type="button" className="gallery-viewer-close" onClick={closeViewer}>
-              <X size={20} />
-            </button>
-            <button type="button" className="gallery-viewer-nav left" onClick={showPrev}>
-              <ChevronLeft size={24} />
-            </button>
-            <div className="gallery-viewer-image-wrap">
-              <WebpImage
-                src={`${import.meta.env.BASE_URL}${images[selectedIndex].src}`}
-                alt={images[selectedIndex].caption}
-                className="gallery-viewer-image"
-              />
-            </div>
-            <button type="button" className="gallery-viewer-nav right" onClick={showNext}>
-              <ChevronRight size={24} />
-            </button>
-          </div>
-        ) : null}
       </section>
+    </div>
+  );
+}
+
+function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
+  const touchStartXRef = useRef(0);
+  const touchEndXRef = useRef(0);
+  const activeImage = images[selectedIndex];
+
+  useEffect(() => {
+    if (selectedIndex < 0) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      } else if (event.key === 'ArrowLeft') {
+        onPrev();
+      } else if (event.key === 'ArrowRight') {
+        onNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, onNext, onPrev, selectedIndex]);
+
+  if (!activeImage) {
+    return null;
+  }
+
+  const handleTouchStart = (event) => {
+    touchStartXRef.current = event.changedTouches[0]?.clientX ?? 0;
+    touchEndXRef.current = touchStartXRef.current;
+  };
+
+  const handleTouchEnd = (event) => {
+    touchEndXRef.current = event.changedTouches[0]?.clientX ?? touchStartXRef.current;
+    const deltaX = touchEndXRef.current - touchStartXRef.current;
+
+    if (Math.abs(deltaX) < 48) {
+      return;
+    }
+
+    if (deltaX > 0) {
+      onPrev();
+    } else {
+      onNext();
+    }
+  };
+
+  return (
+    <div
+      className="gallery-viewer-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="갤러리 이미지 전체 보기"
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        className="gallery-viewer-close-button"
+        onClick={onClose}
+        aria-label="갤러리 전체 화면 닫기"
+      >
+        <X size={22} />
+      </button>
+      <button
+        type="button"
+        className="gallery-viewer-nav left"
+        onClick={(event) => {
+          event.stopPropagation();
+          onPrev();
+        }}
+        aria-label="이전 이미지 보기"
+      >
+        <ChevronLeft size={24} />
+      </button>
+      <div
+        className="gallery-viewer-image-wrap"
+        onClick={(event) => event.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <WebpImage
+          src={`${import.meta.env.BASE_URL}${activeImage.src}`}
+          alt={activeImage.caption}
+          className="gallery-viewer-image"
+        />
+        <p className="gallery-viewer-caption">{activeImage.caption}</p>
+      </div>
+      <button
+        type="button"
+        className="gallery-viewer-nav right"
+        onClick={(event) => {
+          event.stopPropagation();
+          onNext();
+        }}
+        aria-label="다음 이미지 보기"
+      >
+        <ChevronRight size={24} />
+      </button>
     </div>
   );
 }
@@ -946,12 +1029,87 @@ function AttendanceScreen() {
   );
 }
 
+function MapScreenEnhanced() {
+  const [infoTab, setInfoTab] = useState('bride-room');
+  const infoImage = infoTab === 'bride-room' ? BRIDE_ROOM_IMAGE : BANQUET_IMAGE;
+
+  return (
+    <div className="app-screen-content iphone-map-screen">
+      <section className="screen-stack">
+        <div className="map-embedded-card">
+          <Map />
+        </div>
+        <article className="ios-card">
+          <div className="segmented-tabs" role="tablist" aria-label="예식장 안내">
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'bride-room' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('bride-room')}
+            >
+              신부대기실
+            </button>
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'banquet' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('banquet')}
+            >
+              피로연장
+            </button>
+          </div>
+          <WebpImage src={infoImage} alt="" className="info-photo" />
+          <div className="info-copy">
+            {infoTab === 'bride-room' ? (
+              <p>직원 안내를 따라 이동하시면 보다 편하게 입장하실 수 있습니다.</p>
+            ) : (
+              <>
+                <p>피로연장은 예식장 바로 옆에 위치해 있으며 예식 30분 전부터 이용 가능합니다.</p>
+                <p>다양한 뷔페 메뉴와 음료 코너를 편하게 즐겨주세요.</p>
+              </>
+            )}
+          </div>
+        </article>
+      </section>
+    </div>
+  );
+}
+
 function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
+  const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(-1);
+  const galleryImages = useMemo(() => weddingInfo.gallery.slice(0, 12), []);
   const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const prepareOpening = async () => {
+      const startedAt = window.performance.now();
+
+      await Promise.allSettled([
+        preloadImage(HERO_IMAGE),
+        preloadImage(BRIDE_INTRO_IMAGE),
+        preloadImage(GROOM_INTRO_IMAGE),
+      ]);
+
+      const elapsed = window.performance.now() - startedAt;
+      const remaining = Math.max(0, 1200 - elapsed);
+
+      window.setTimeout(() => {
+        if (isMounted) {
+          setIsPreloading(false);
+        }
+      }, remaining);
+    };
+
+    prepareOpening();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
@@ -988,11 +1146,28 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const isViewerOpen = selectedGalleryIndex >= 0;
+    document.body.classList.toggle('gallery-viewer-open', isViewerOpen);
+    document.documentElement.classList.toggle('gallery-viewer-open', isViewerOpen);
+
+    return () => {
+      document.body.classList.remove('gallery-viewer-open');
+      document.documentElement.classList.remove('gallery-viewer-open');
+    };
+  }, [selectedGalleryIndex]);
+
+  const closeViewer = () => setSelectedGalleryIndex(-1);
+  const showPrevImage = () =>
+    setSelectedGalleryIndex((prev) => (prev <= 0 ? galleryImages.length - 1 : prev - 1));
+  const showNextImage = () =>
+    setSelectedGalleryIndex((prev) => (prev >= galleryImages.length - 1 ? 0 : prev + 1));
+
   const appContent = {
     invitation: <InvitationScreen />,
     profile: <ProfileScreen />,
-    gallery: <GalleryScreen />,
-    map: <MapScreen />,
+    gallery: <GalleryScreen onOpenViewer={setSelectedGalleryIndex} />,
+    map: <MapScreenEnhanced />,
     guestbook: <GuestbookScreen />,
     account: <AccountScreen />,
     rsvp: <AttendanceScreen />,
@@ -1000,6 +1175,11 @@ function App() {
 
   return (
     <div className="iphone-page-shell">
+      <div className={`preload-screen${isPreloading ? '' : ' is-done'}`} aria-hidden={!isPreloading}>
+        <div className="preload-spinner-wrap">
+          <div className="preload-spinner" />
+        </div>
+      </div>
       <main
         className={`phone-screen mobile-phone-screen is-stage-${currentStage} ${activeApp ? 'is-detail-open' : ''}`}
         style={{
@@ -1032,6 +1212,15 @@ function App() {
           </div>
         )}
       </main>
+      {selectedGalleryIndex >= 0 ? (
+        <GalleryViewer
+          images={galleryImages}
+          selectedIndex={selectedGalleryIndex}
+          onClose={closeViewer}
+          onPrev={showPrevImage}
+          onNext={showNextImage}
+        />
+      ) : null}
     </div>
   );
 }
