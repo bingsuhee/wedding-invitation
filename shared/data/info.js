@@ -9,6 +9,7 @@ export const weddingInfo = {
     mother: { name: '신정미', account: '우리은행 444-555-666' },
     account: '국민은행 123-456-789',
     contact: '010-1234-5678',
+    introTags: ['#강하늘닮은꼴', '#어쩌면김동률', '#빙수'],
   },
   bride: {
     name: '김소희',
@@ -20,6 +21,7 @@ export const weddingInfo = {
     mother: { name: '송해란', account: '하나은행 000-111-222' },
     account: '신한은행 987-654-321',
     contact: '010-5678-1234',
+    introTags: ['#얼굴은얄라리', '#성격은박명수', '#땃지'],
   },
   date: '2026년 10월 11일 오후 12시',
   dateLabel: '2026년 10월 11일',

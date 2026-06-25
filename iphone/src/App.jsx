@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   CalendarDays,
   Camera,
+  ChevronDown,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -95,21 +96,33 @@ function LockScreen({ onUnlock }) {
   const lockDateLabel = `${weddingInfo.year}.${String(weddingInfo.month).padStart(2, '0')}.${String(weddingInfo.day).padStart(2, '0')} (${ceremonyWeekday})`;
   const lockTimeLabel = `${String(weddingInfo.hour).padStart(2, '0')}:${String(weddingInfo.minute).padStart(2, '0')}`;
 
-  const handlePointerDown = (event) => {
-    const startY = event.clientY;
+  const beginSwipeTracking = (startY, moveEventName, endEventNames) => {
     let latestOffset = 0;
 
-    const handlePointerMove = (moveEvent) => {
-      const deltaY = Math.max(0, startY - moveEvent.clientY);
+    const getClientY = (event) => {
+      if ('touches' in event && event.touches.length > 0) {
+        return event.touches[0].clientY;
+      }
+
+      if ('changedTouches' in event && event.changedTouches.length > 0) {
+        return event.changedTouches[0].clientY;
+      }
+
+      return event.clientY;
+    };
+
+    const handleSwipeMove = (moveEvent) => {
+      const deltaY = Math.max(0, startY - getClientY(moveEvent));
       latestOffset = Math.min(deltaY, 150);
       setSwipeOffset(latestOffset);
       setIsDragging(true);
     };
 
-    const handlePointerUp = () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
+    const handleSwipeEnd = () => {
+      window.removeEventListener(moveEventName, handleSwipeMove);
+      endEventNames.forEach((eventName) => {
+        window.removeEventListener(eventName, handleSwipeEnd);
+      });
 
       if (latestOffset >= unlockThreshold) {
         onUnlock();
@@ -119,9 +132,22 @@ function LockScreen({ onUnlock }) {
       setIsDragging(false);
     };
 
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
+    window.addEventListener(moveEventName, handleSwipeMove, { passive: true });
+    endEventNames.forEach((eventName) => {
+      window.addEventListener(eventName, handleSwipeEnd, { passive: true });
+    });
+  };
+
+  const handlePointerDown = (event) => {
+    beginSwipeTracking(event.clientY, 'pointermove', ['pointerup', 'pointercancel']);
+  };
+
+  const handleTouchStart = (event) => {
+    if (event.touches.length === 0) {
+      return;
+    }
+
+    beginSwipeTracking(event.touches[0].clientY, 'touchmove', ['touchend', 'touchcancel']);
   };
 
   return (
@@ -152,7 +178,7 @@ function LockScreen({ onUnlock }) {
           type="button"
           className="swipe-unlock"
           onPointerDown={handlePointerDown}
-          onClick={onUnlock}
+          onTouchStart={handleTouchStart}
           aria-label="위로 스와이프해 잠금 해제"
         >
           <span className="swipe-unlock-pill" />
@@ -298,46 +324,50 @@ function ProfileScreen() {
     <div className="app-screen-content">
       <section className="screen-stack">
         <div className="profile-duo-grid">
-          <article className="ios-card profile-card compact">
+          <article className="ios-card profile-card compact profile-card-groom">
             <WebpImage
               src={GROOM_INTRO_IMAGE}
               alt={`신랑 ${weddingInfo.groom.name}`}
               className="profile-image"
             />
             <div className="profile-copy">
-              <span className="profile-role">신랑</span>
-              <h3>{groomGivenName}</h3>
+              <p className="profile-heading">
+                <span className="profile-role">신랑</span>
+                <span className="profile-name">{weddingInfo.groom.name}</span>
+              </p>
               <p>
-                {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}의 장남
+                {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}의 아들
               </p>
               <p>{weddingInfo.groom.profile.birthDate}</p>
               <div className="tag-list">
-                {weddingInfo.groom.profile.tags.map((tag) => (
+                {(weddingInfo.groom.introTags ?? weddingInfo.groom.profile.tags).map((tag) => (
                   <span key={tag}>{tag}</span>
                 ))}
               </div>
             </div>
           </article>
 
-          <article className="ios-card profile-card compact">
+          <article className="ios-card profile-card compact profile-card-bride">
+            <div className="profile-copy">
+              <p className="profile-heading">
+                <span className="profile-role">신부</span>
+                <span className="profile-name">{weddingInfo.bride.name}</span>
+              </p>
+              <p>
+                {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}의 딸
+              </p>
+              <p>{weddingInfo.bride.profile.birthDate}</p>
+              <div className="tag-list bride-tag-list">
+                {(weddingInfo.bride.introTags ?? weddingInfo.bride.profile.tags).map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+            </div>
             <WebpImage
               src={BRIDE_INTRO_IMAGE}
               alt={`신부 ${weddingInfo.bride.name}`}
               className="profile-image"
             />
-            <div className="profile-copy">
-              <span className="profile-role">신부</span>
-              <h3>{brideGivenName}</h3>
-              <p>
-                {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}의 장녀
-              </p>
-              <p>{weddingInfo.bride.profile.birthDate}</p>
-              <div className="tag-list">
-                {weddingInfo.bride.profile.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-            </div>
           </article>
         </div>
 
@@ -465,6 +495,10 @@ function MapScreen() {
                 <p>다양한 뷔페 메뉴와 음료 코너를 편하게 즐겨주세요.</p>
               </>
             )}
+          </div>
+          <div className="venue-copy">
+            <p className="venue-name">{weddingInfo.location.name}</p>
+            <p className="venue-address">{weddingInfo.location.address}</p>
           </div>
         </article>
       </section>
@@ -635,6 +669,20 @@ function GuestbookScreen() {
 }
 
 function AccountContent({ title, people }) {
+  const [copiedAccount, setCopiedAccount] = useState('');
+
+  const handleCopyAccount = async (account) => {
+    try {
+      await navigator.clipboard.writeText(account);
+      setCopiedAccount(account);
+      window.setTimeout(() => {
+        setCopiedAccount((current) => (current === account ? '' : current));
+      }, 1800);
+    } catch (error) {
+      window.alert('계좌번호 복사에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  };
+
   return (
     <article className="ios-card">
       <div className="account-static-title">{title}</div>
@@ -649,6 +697,13 @@ function AccountContent({ title, people }) {
               <p className="account-name">{person.name}</p>
               <p className="account-number">{person.account}</p>
             </div>
+            <button
+              type="button"
+              className="copy-button"
+              onClick={() => handleCopyAccount(person.account)}
+            >
+              {copiedAccount === person.account ? '복사됨' : '복사'}
+            </button>
           </div>
         ))}
       </div>
@@ -974,14 +1029,14 @@ function App() {
         ) : (
           <div className="opened-app-shell stage-panel stage-panel-detail" key={activeApp}>
             <div className="opened-app-header">
-              <button type="button" className="close-app-button" onClick={() => setActiveApp('')}>
-                <X size={18} />
-              </button>
+              <div className="opened-app-spacer" />
               <div className="opened-app-title">
                 <ActiveAppIcon size={18} strokeWidth={2.1} />
                 <span>{activeAppTitle}</span>
               </div>
-              <div className="opened-app-spacer" />
+              <button type="button" className="close-app-button" onClick={() => setActiveApp('')}>
+                <ChevronDown size={18} />
+              </button>
             </div>
             <div className="opened-app-body">{appContent[activeApp]}</div>
           </div>
