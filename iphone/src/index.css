@@ -774,7 +774,7 @@ body.iphone-body-lock {
   width: fit-content;
 }
 
-.profile-card-bride {
+.profile-card.profile-card-bride {
   grid-template-columns: minmax(0, 1fr) minmax(120px, 148px);
 }
 
