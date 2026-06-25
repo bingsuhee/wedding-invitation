@@ -202,15 +202,15 @@ body.gallery-viewer-open {
 
 .lock-date {
   margin: 0;
-  font-size: clamp(15px, 4vw, 18px);
+  font-size: clamp(22px, 6vw, 28px);
   font-weight: 600;
   letter-spacing: -0.03em;
   opacity: 0.94;
 }
 
 .lock-time {
-  margin: 4px 0 0;
-  font-size: clamp(78px, 22vw, 114px);
+  margin: 8px 0 0;
+  font-size: clamp(112px, 31vw, 164px);
   font-weight: 700;
   line-height: 0.92;
   letter-spacing: -0.06em;
