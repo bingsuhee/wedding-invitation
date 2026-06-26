@@ -875,6 +875,10 @@ body.gallery-viewer-open {
   align-items: stretch;
 }
 
+.profile-card.compact.profile-card-bride {
+  grid-template-columns: minmax(0, 1fr) var(--profile-image-width);
+}
+
 .profile-card.compact .profile-image {
   width: 100%;
   height: 100%;
@@ -886,9 +890,18 @@ body.gallery-viewer-open {
   object-position: center center;
 }
 
+.profile-card.compact.profile-card-bride .profile-image {
+  grid-column: 2;
+}
+
 .profile-card.compact .profile-copy {
   align-content: start;
   padding-top: 1px;
+}
+
+.profile-card.compact.profile-card-bride .profile-copy {
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .profile-duo-grid {
