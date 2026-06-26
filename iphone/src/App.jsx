@@ -9,6 +9,7 @@ import {
   ChevronUp,
   Heart,
   Image as ImageIcon,
+  LockKeyhole,
   Mail,
   MapPinned,
   MessageCircleMore,
@@ -1260,6 +1261,11 @@ function App() {
     setSelectedGalleryIndex((prev) => (prev <= 0 ? galleryImages.length - 1 : prev - 1));
   const showNextImage = () =>
     setSelectedGalleryIndex((prev) => (prev >= galleryImages.length - 1 ? 0 : prev + 1));
+  const relockToStart = () => {
+    setSelectedGalleryIndex(-1);
+    setActiveApp('');
+    setIsUnlocked(false);
+  };
 
   const appContent = {
     invitation: <InvitationScreen />,
@@ -1280,6 +1286,16 @@ function App() {
         }}
       >
         <PhoneStatus />
+        {isUnlocked && selectedGalleryIndex < 0 ? (
+          <button
+            type="button"
+            className="relock-button"
+            onClick={relockToStart}
+            aria-label="잠금화면으로 돌아가기"
+          >
+            <LockKeyhole size={16} strokeWidth={2.2} />
+          </button>
+        ) : null}
 
         {!isUnlocked ? (
           <div className="stage-panel stage-panel-lock" key="lock">
