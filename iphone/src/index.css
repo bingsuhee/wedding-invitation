@@ -53,16 +53,16 @@ body.gallery-viewer-open {
 }
 
 :root {
-  --iphone-detail-text-strong: #241b16;
-  --iphone-detail-text-title: #503528;
-  --iphone-detail-text-main: rgba(29, 25, 21, 0.74);
-  --iphone-detail-text-soft: rgba(55, 40, 28, 0.62);
-  --iphone-detail-text-faint: rgba(29, 25, 21, 0.46);
-  --iphone-detail-line: rgba(94, 73, 55, 0.1);
-  --iphone-detail-accent: #9a5d44;
-  --iphone-detail-accent-strong: #7d4c39;
-  --iphone-detail-accent-soft: #fff3ea;
-  --iphone-detail-input-bg: rgba(255, 255, 255, 0.94);
+  --iphone-detail-text-strong: #34231f;
+  --iphone-detail-text-title: #624039;
+  --iphone-detail-text-main: rgba(52, 35, 31, 0.74);
+  --iphone-detail-text-soft: rgba(90, 62, 55, 0.64);
+  --iphone-detail-text-faint: rgba(52, 35, 31, 0.44);
+  --iphone-detail-line: rgba(216, 137, 126, 0.16);
+  --iphone-detail-accent: #d9897e;
+  --iphone-detail-accent-strong: #b86b62;
+  --iphone-detail-accent-soft: #ffe8e3;
+  --iphone-detail-input-bg: rgba(255, 255, 255, 0.9);
 }
 
 .iphone-page-shell {
@@ -94,7 +94,9 @@ body.gallery-viewer-open {
 
 .phone-screen.is-detail-open {
   background-image: none !important;
-  background: linear-gradient(180deg, #f7efe5 0%, #f3e5d6 100%);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.92) 0%, transparent 28%),
+    linear-gradient(180deg, #fff7f6 0%, #fff1ed 54%, #ffe8e3 100%);
 }
 
 .phone-screen::before {
@@ -109,7 +111,8 @@ body.gallery-viewer-open {
 
 .phone-screen.is-detail-open::before {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.18) 20%, transparent 26%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.24) 18%, transparent 32%),
+    radial-gradient(circle at 18% 8%, rgba(255, 216, 210, 0.58), transparent 30%);
 }
 
 .phone-statusbar,
@@ -136,7 +139,7 @@ body.gallery-viewer-open {
 }
 
 .phone-screen.is-detail-open .phone-statusbar {
-  color: #171411;
+  color: var(--iphone-detail-text-strong);
 }
 
 .phone-status-icons {
@@ -161,11 +164,11 @@ body.gallery-viewer-open {
 }
 
 .phone-screen.is-detail-open .battery-pill {
-  border-color: rgba(23, 20, 17, 0.72);
+  border-color: rgba(52, 35, 31, 0.58);
 }
 
 .phone-screen.is-detail-open .battery-fill {
-  background: #171411;
+  background: var(--iphone-detail-text-strong);
 }
 
 .home-screen {
@@ -591,11 +594,11 @@ body.gallery-viewer-open {
 }
 
 .phone-screen.is-detail-open .relock-button {
-  background: rgba(255, 255, 255, 0.78);
-  color: #171411;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--iphone-detail-text-strong);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 10px 22px rgba(78, 58, 45, 0.14);
+    0 10px 22px rgba(184, 107, 98, 0.16);
 }
 
 .close-app-button {
@@ -616,14 +619,14 @@ body.gallery-viewer-open {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #5f493d;
+  color: var(--iphone-detail-text-title);
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
 
 .phone-screen.is-detail-open .opened-app-title {
-  color: #171411;
+  color: var(--iphone-detail-text-strong);
 }
 
 .opened-app-body {
@@ -637,7 +640,7 @@ body.gallery-viewer-open {
 
 .phone-screen.is-detail-open .close-app-button {
   background: rgba(255, 255, 255, 0.74);
-  color: #6d5447;
+  color: var(--iphone-detail-accent-strong);
 }
 
 .app-screen-content {
@@ -666,12 +669,12 @@ body.gallery-viewer-open {
 .soft-card,
 .soft-card-strong {
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.76);
   border-radius: 28px;
-  background: rgba(251, 246, 240, 0.88);
+  background: rgba(255, 255, 255, 0.84);
   box-shadow:
-    0 18px 38px rgba(60, 38, 18, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.66);
+    0 18px 38px rgba(184, 107, 98, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(22px);
 }
 
@@ -705,7 +708,7 @@ body.gallery-viewer-open {
   inset: 0.08em -0.18em;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(255, 219, 173, 0) 0%, rgba(255, 219, 173, 0.95) 10%, rgba(255, 198, 146, 0.95) 50%, rgba(255, 219, 173, 0.95) 90%, rgba(255, 219, 173, 0) 100%),
+    linear-gradient(90deg, rgba(255, 232, 227, 0) 0%, rgba(255, 232, 227, 0.96) 10%, rgba(255, 204, 197, 0.96) 50%, rgba(255, 232, 227, 0.96) 90%, rgba(255, 232, 227, 0) 100%),
     repeating-linear-gradient(-4deg, rgba(255, 255, 255, 0.28) 0 2px, rgba(255, 255, 255, 0) 2px 7px);
   clip-path: polygon(0 20%, 10% 15%, 24% 16%, 42% 10%, 58% 12%, 78% 13%, 100% 9%, 97% 82%, 86% 87%, 66% 85%, 47% 88%, 26% 86%, 4% 82%);
 }
@@ -785,7 +788,7 @@ body.gallery-viewer-open {
   width: fit-content;
   padding: 8px 13px;
   border-radius: 999px;
-  background: rgba(255, 232, 209, 0.92);
+  background: rgba(255, 232, 227, 0.96);
   color: var(--iphone-detail-accent-strong);
   font-size: 12px;
   font-weight: 800;
@@ -825,8 +828,8 @@ body.gallery-viewer-open {
   gap: 8px;
   padding: 9px 14px;
   border-radius: 999px;
-  background: rgba(255, 241, 230, 0.95);
-  color: #8e5b46;
+  background: rgba(255, 232, 227, 0.96);
+  color: var(--iphone-detail-accent-strong);
   font-size: 12px;
   font-weight: 700;
 }
@@ -855,14 +858,14 @@ body.gallery-viewer-open {
   display: grid;
   gap: 14px;
   padding: 18px;
-  border: 1px solid rgba(215, 183, 154, 0.34);
+  border: 1px solid rgba(216, 137, 126, 0.24);
   border-radius: 26px;
   background:
-    linear-gradient(180deg, rgba(255, 250, 246, 0.98) 0%, rgba(249, 239, 228, 0.98) 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 246, 244, 0.96) 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    0 16px 30px rgba(119, 80, 48, 0.08);
-  color: #4d3528;
+    0 16px 30px rgba(184, 107, 98, 0.1);
+  color: var(--iphone-detail-text-title);
 }
 
 .profile-card.compact {
@@ -898,11 +901,11 @@ body.gallery-viewer-open {
   aspect-ratio: 1 / 1;
   width: 100%;
   border-radius: 22px;
-  border: 1px solid rgba(223, 191, 164, 0.5);
+  border: 1px solid rgba(216, 137, 126, 0.28);
   object-fit: cover;
   object-position: center top;
-  background: linear-gradient(180deg, #f0dfcf 0%, #e7cfbb 100%);
-  box-shadow: 0 10px 22px rgba(144, 102, 70, 0.12);
+  background: linear-gradient(180deg, #fff1ed 0%, #ffe2dc 100%);
+  box-shadow: 0 10px 22px rgba(184, 107, 98, 0.12);
 }
 
 .profile-copy {
@@ -934,14 +937,14 @@ body.gallery-viewer-open {
 }
 
 .profile-card .profile-role {
-  color: #b97757;
+  color: var(--iphone-detail-accent-strong);
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: none;
 }
 
 .profile-card .profile-copy p:not(.profile-heading) {
-  color: rgba(92, 64, 46, 0.86);
+  color: rgba(98, 64, 57, 0.84);
   font-size: 14px;
   line-height: 1.45;
   font-weight: 600;
@@ -957,8 +960,8 @@ body.gallery-viewer-open {
 .profile-card .tag-list span {
   padding: 7px 12px;
   border-radius: 999px;
-  background: rgba(255, 233, 214, 0.88);
-  color: #9b6347;
+  background: rgba(255, 232, 227, 0.9);
+  color: var(--iphone-detail-accent-strong);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -1129,9 +1132,9 @@ body.gallery-viewer-open {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid rgba(94, 73, 55, 0.12);
-  background: rgba(255, 255, 255, 0.92);
-  color: #1d1a17;
+  border: 1px solid var(--iphone-detail-line);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--iphone-detail-text-strong);
 }
 
 .segmented-tabs {
@@ -1157,7 +1160,7 @@ body.gallery-viewer-open {
 .segment-button.is-active {
   background: var(--iphone-detail-accent-soft);
   color: var(--iphone-detail-text-strong);
-  box-shadow: inset 0 0 0 1px rgba(255, 188, 150, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(217, 137, 126, 0.42);
 }
 
 .info-photo {
@@ -1303,7 +1306,7 @@ body.gallery-viewer-open {
 }
 
 .attendance-label span {
-  color: #e06f6f;
+  color: var(--iphone-detail-accent-strong);
 }
 
 .attendance-segment-grid {
@@ -1322,10 +1325,10 @@ body.gallery-viewer-open {
 .attendance-segment-button,
 .attendance-text-input,
 .attendance-textarea {
-  border: 1px solid rgba(214, 197, 182, 0.72);
+  border: 1px solid rgba(216, 137, 126, 0.22);
   border-radius: 18px;
   background: var(--iphone-detail-input-bg);
-  color: #4b3424;
+  color: var(--iphone-detail-text-strong);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
@@ -1338,9 +1341,9 @@ body.gallery-viewer-open {
 }
 
 .attendance-segment-button.is-active {
-  border-color: rgba(236, 166, 131, 0.95);
+  border-color: rgba(217, 137, 126, 0.72);
   background: var(--iphone-detail-accent-soft);
-  color: var(--iphone-detail-accent);
+  color: var(--iphone-detail-accent-strong);
 }
 
 .attendance-text-input,
@@ -1358,14 +1361,14 @@ body.gallery-viewer-open {
 
 .attendance-text-input::placeholder,
 .attendance-textarea::placeholder {
-  color: rgba(103, 82, 66, 0.45);
+  color: rgba(90, 62, 55, 0.42);
 }
 
 .attendance-text-input:focus,
 .attendance-textarea:focus {
   outline: none;
-  border-color: rgba(236, 166, 131, 0.95);
-  box-shadow: 0 0 0 3px rgba(255, 212, 188, 0.45);
+  border-color: rgba(217, 137, 126, 0.72);
+  box-shadow: 0 0 0 3px rgba(255, 232, 227, 0.74);
 }
 
 .attendance-consent-row {
@@ -1382,15 +1385,15 @@ body.gallery-viewer-open {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dfd5ca;
+  border: 1px solid rgba(216, 137, 126, 0.26);
   border-radius: 4px;
   background: #fff;
   color: transparent;
 }
 
 .attendance-consent-box.is-active {
-  border-color: #d6b7b6;
-  background: #d6b7b6;
+  border-color: var(--iphone-detail-accent);
+  background: var(--iphone-detail-accent);
   color: #fff;
 }
 
@@ -1414,16 +1417,16 @@ body.gallery-viewer-open {
 .attendance-submit-button {
   min-height: 54px;
   border-radius: 22px;
-  background: linear-gradient(180deg, #f3b088 0%, #e98963 100%);
+  background: linear-gradient(180deg, #e6a096 0%, #d9897e 100%);
   color: #fff;
   font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  box-shadow: 0 14px 24px rgba(211, 126, 82, 0.24);
+  box-shadow: 0 14px 24px rgba(217, 137, 126, 0.26);
 }
 
 .attendance-submit-button:disabled {
-  background: linear-gradient(180deg, #e7ddd6 0%, #d7ccc4 100%);
+  background: linear-gradient(180deg, #eadcda 0%, #dcc9c6 100%);
   color: rgba(255, 255, 255, 0.82);
   box-shadow: none;
 }
@@ -1461,11 +1464,11 @@ body.gallery-viewer-open {
 
 .guestbook-input {
   width: 100%;
-  border: 1px solid rgba(214, 197, 182, 0.72);
+  border: 1px solid rgba(216, 137, 126, 0.22);
   border-radius: 18px;
   background: var(--iphone-detail-input-bg);
   padding: 15px 16px;
-  color: #1d1a17;
+  color: var(--iphone-detail-text-strong);
   font-size: 14px;
   line-height: 1.55;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -1477,13 +1480,13 @@ body.gallery-viewer-open {
 }
 
 .guestbook-input::placeholder {
-  color: rgba(103, 82, 66, 0.45);
+  color: rgba(90, 62, 55, 0.42);
 }
 
 .guestbook-input:focus {
   outline: none;
-  border-color: rgba(236, 166, 131, 0.95);
-  box-shadow: 0 0 0 3px rgba(255, 212, 188, 0.42);
+  border-color: rgba(217, 137, 126, 0.72);
+  box-shadow: 0 0 0 3px rgba(255, 232, 227, 0.74);
 }
 
 .guestbook-message-list {
@@ -1495,7 +1498,7 @@ body.gallery-viewer-open {
   padding: 18px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(232, 219, 208, 0.92);
+  border: 1px solid rgba(216, 137, 126, 0.16);
 }
 
 .guestbook-message-head {
@@ -1511,8 +1514,8 @@ body.gallery-viewer-open {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(255, 241, 229, 0.96);
-  color: #8c6c56;
+  background: rgba(255, 232, 227, 0.96);
+  color: var(--iphone-detail-accent-strong);
 }
 
 .guestbook-name {
@@ -1566,12 +1569,12 @@ body.gallery-viewer-open {
 }
 
 .guestbook-submit-button {
-  background: linear-gradient(180deg, #f3b088 0%, #e98963 100%);
+  background: linear-gradient(180deg, #e6a096 0%, #d9897e 100%);
   color: #fff;
 }
 
 .guestbook-submit-button:disabled {
-  background: linear-gradient(180deg, #e7ddd6 0%, #d7ccc4 100%);
+  background: linear-gradient(180deg, #eadcda 0%, #dcc9c6 100%);
   color: rgba(255, 255, 255, 0.82);
   box-shadow: none;
 }
