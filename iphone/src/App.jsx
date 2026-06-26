@@ -27,6 +27,9 @@ import { WebpImage } from '@shared/components/WebpImage';
 import { toWebpSrc } from '@shared/lib/image';
 
 const HERO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-hero.png`;
+const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/iphone-lock-before.png`;
+const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/iphone-invitation-first.png`;
+const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/iphone-notice-widget.png`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
@@ -237,7 +240,12 @@ function HomeScreen({ onOpen }) {
             <p>앱 아이콘을 눌러 상세 정보를 확인하세요</p>
           </div>
           <div className="home-widget-image-wrap" aria-hidden="true">
-            <WebpImage src={HERO_IMAGE} alt="" className="home-widget-image" fetchPriority="high" />
+            <WebpImage
+              src={NOTICE_WIDGET_IMAGE}
+              alt=""
+              className="home-widget-image"
+              fetchPriority="high"
+            />
           </div>
         </div>
       </div>
@@ -275,16 +283,13 @@ function HomeScreen({ onOpen }) {
 function InvitationScreen() {
   const groomGivenName = weddingInfo.groom.name.slice(1);
   const brideGivenName = weddingInfo.bride.name.slice(1);
-  const invitationImage = weddingInfo.gallery[0]
-    ? `${import.meta.env.BASE_URL}${weddingInfo.gallery[0].src}`
-    : HERO_IMAGE;
 
   return (
     <div className="app-screen-content">
       <section className="screen-stack">
         <article className="ios-card hero-copy-card">
           <div className="invitation-inline-image-wrap">
-            <img src={invitationImage} alt="" className="invitation-inline-image" />
+            <WebpImage src={INVITATION_DETAIL_IMAGE} alt="" className="invitation-inline-image" />
           </div>
           <h3 className="hero-main-copy">
             <span className="hero-main-copy-line">
@@ -1166,11 +1171,6 @@ function MapScreenLegacy() {
           </div>
         </article>
 
-        {guestbookToast ? (
-          <div className="copy-toast" role="status" aria-live="polite">
-            {guestbookToast}
-          </div>
-        ) : null}
       </section>
     </div>
   );
@@ -1252,6 +1252,7 @@ function App() {
   const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
+  const screenBackgroundImage = toWebpSrc(!isUnlocked ? LOCK_SCREEN_IMAGE : HERO_IMAGE);
 
   useEffect(() => {
     document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
@@ -1325,7 +1326,7 @@ function App() {
       <main
         className={`phone-screen mobile-phone-screen is-stage-${currentStage} ${activeApp ? 'is-detail-open' : ''}`}
         style={{
-          backgroundImage: `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${toWebpSrc(HERO_IMAGE)})`,
+          backgroundImage: `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${screenBackgroundImage})`,
         }}
       >
         <PhoneStatus />

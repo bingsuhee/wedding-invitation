@@ -763,19 +763,20 @@ body.gallery-viewer-open {
 }
 
 .profile-card.compact {
-  --profile-image-width: clamp(132px, 38vw, 146px);
-  --profile-image-height: clamp(156px, 44vw, 172px);
+  --profile-image-width: clamp(126px, 36vw, 150px);
   grid-template-columns: var(--profile-image-width) minmax(0, 1fr);
   gap: 12px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .profile-card.compact .profile-image {
-  width: var(--profile-image-width);
-  height: var(--profile-image-height);
-  aspect-ratio: auto;
+  width: 100%;
+  height: 100%;
+  min-height: 168px;
+  aspect-ratio: 3 / 4;
   justify-self: start;
-  align-self: start;
+  align-self: stretch;
+  object-fit: cover;
   object-position: center center;
 }
 
@@ -1662,7 +1663,12 @@ body.gallery-viewer-open {
   }
 
   .profile-card.compact {
-    grid-template-columns: 80px minmax(0, 1fr);
+    --profile-image-width: clamp(94px, 30vw, 116px);
+    grid-template-columns: var(--profile-image-width) minmax(0, 1fr);
+  }
+
+  .profile-card.compact .profile-image {
+    min-height: 132px;
   }
 
   .gallery-viewer-image-wrap {

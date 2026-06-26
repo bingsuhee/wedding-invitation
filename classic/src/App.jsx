@@ -672,7 +672,7 @@ function App() {
                     10월 11일 저희 결혼합니다.
                   </p>
                   <p className="text-[15px] leading-relaxed text-black/35">
-                    2026.10.11 (일) 12:00
+                    {weddingInfo.date}
                     <br />
                     JK아트컨벤션 아트리움홀
                   </p>
@@ -772,9 +772,7 @@ function App() {
                   JK아트컨벤션 아트리움홀
                 </span>
                 <br />
-                2026년 10월 11일 일요일
-                <br />
-                오후 12시
+                {weddingInfo.date}
               </p>
               <CalendarBlock />
               <div className="text-center">
