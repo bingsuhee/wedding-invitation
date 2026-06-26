@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Copy,
   Heart,
   Image as ImageIcon,
   LockKeyhole,
@@ -353,6 +354,11 @@ function ProfileScreen() {
           </article>
 
           <article className="ios-card profile-card compact profile-card-bride">
+            <WebpImage
+              src={BRIDE_INTRO_IMAGE}
+              alt={`신부 ${weddingInfo.bride.name}`}
+              className="profile-image"
+            />
             <div className="profile-copy">
               <p className="profile-heading">
                 <span className="profile-role">신부</span>
@@ -368,11 +374,6 @@ function ProfileScreen() {
                 ))}
               </div>
             </div>
-            <WebpImage
-              src={BRIDE_INTRO_IMAGE}
-              alt={`신부 ${weddingInfo.bride.name}`}
-              className="profile-image"
-            />
           </article>
         </div>
 
@@ -586,10 +587,12 @@ function GuestbookScreen() {
   const [name, setName] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const [guestbookToast, setGuestbookToast] = useState('');
   const [fetching, setFetching] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [fetchedOffset, setFetchedOffset] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const canSubmitGuestbook = name.trim().length > 0 && content.trim().length > 0;
 
   useEffect(() => {
     const fetchMessages = async (offset, append) => {
@@ -643,7 +646,7 @@ function GuestbookScreen() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!name.trim() || !content.trim()) return;
+    if (!canSubmitGuestbook) return;
 
     setLoading(true);
     try {
@@ -664,7 +667,10 @@ function GuestbookScreen() {
       setContent('');
     } catch (error) {
       console.error('Error adding message:', error.message);
-      window.alert('메시지 작성에 실패했습니다.');
+      setGuestbookToast('메시지 작성에 실패했습니다.');
+      window.setTimeout(() => {
+        setGuestbookToast('');
+      }, 1800);
     } finally {
       setLoading(false);
     }
@@ -675,24 +681,44 @@ function GuestbookScreen() {
   return (
     <div className="app-screen-content">
       <section className="screen-stack">
+        <article className="ios-card text-card">
+          <p className="message-block small">
+            함께해 주시는 마음을 짧은 글로 남겨주시면
+            <br />
+            오래도록 소중하게 간직하겠습니다.
+          </p>
+        </article>
+
         <article className="ios-card guestbook-card">
           <form onSubmit={handleSubmit} className="guestbook-form-card">
-            <input
-              type="text"
-              placeholder="이름"
-              className="guestbook-input"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              required
-            />
-            <textarea
-              placeholder="축하 메시지를 남겨주세요"
-              className="guestbook-input textarea"
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              required
-            />
-            <button type="submit" disabled={loading} className="guestbook-submit-button">
+            <div className="guestbook-form-section">
+              <p className="attendance-label">이름 <span>*</span></p>
+              <input
+                type="text"
+                placeholder="이름"
+                className="guestbook-input"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                required
+              />
+            </div>
+
+            <div className="guestbook-form-section">
+              <p className="attendance-label">축하 메시지 <span>*</span></p>
+              <textarea
+                placeholder="축하 메시지를 남겨주세요"
+                className="guestbook-input textarea"
+                value={content}
+                onChange={(event) => setContent(event.target.value)}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !canSubmitGuestbook}
+              className="guestbook-submit-button"
+            >
               <Send size={16} />
               {loading ? '보내는 중...' : '축하 메시지 보내기'}
             </button>
@@ -745,13 +771,18 @@ function GuestbookScreen() {
 
 function AccountContent({ title, people }) {
   const [copiedAccount, setCopiedAccount] = useState('');
+  const [showCopyToast, setShowCopyToast] = useState(false);
 
   const handleCopyAccount = async (account) => {
     try {
       await navigator.clipboard.writeText(account);
       setCopiedAccount(account);
+      setShowCopyToast(true);
       window.setTimeout(() => {
         setCopiedAccount((current) => (current === account ? '' : current));
+      }, 1800);
+      window.setTimeout(() => {
+        setShowCopyToast(false);
       }, 1800);
     } catch (error) {
       window.alert('계좌번호 복사에 실패했습니다. 잠시 후 다시 시도해 주세요.');
@@ -776,12 +807,18 @@ function AccountContent({ title, people }) {
               type="button"
               className="copy-button"
               onClick={() => handleCopyAccount(person.account)}
+              aria-label={`${person.name} 계좌번호 복사`}
             >
-              {copiedAccount === person.account ? '복사됨' : '복사'}
+              {copiedAccount === person.account ? <Check size={16} /> : <Copy size={16} />}
             </button>
           </div>
         ))}
       </div>
+      {showCopyToast ? (
+        <div className="copy-toast" role="status" aria-live="polite">
+          계좌번호가 클립보드에 복사되었습니다.
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -1128,6 +1165,12 @@ function MapScreenLegacy() {
             )}
           </div>
         </article>
+
+        {guestbookToast ? (
+          <div className="copy-toast" role="status" aria-live="polite">
+            {guestbookToast}
+          </div>
+        ) : null}
       </section>
     </div>
   );
