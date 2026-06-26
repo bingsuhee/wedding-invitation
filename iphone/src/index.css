@@ -135,6 +135,10 @@ body.gallery-viewer-open {
   font-weight: 700;
 }
 
+.phone-screen.is-detail-open .phone-statusbar {
+  color: #171411;
+}
+
 .phone-status-icons {
   display: flex;
   align-items: center;
@@ -154,6 +158,14 @@ body.gallery-viewer-open {
   width: 70%;
   border-radius: inherit;
   background: #fff;
+}
+
+.phone-screen.is-detail-open .battery-pill {
+  border-color: rgba(23, 20, 17, 0.72);
+}
+
+.phone-screen.is-detail-open .battery-fill {
+  background: #171411;
 }
 
 .home-screen {
@@ -425,6 +437,32 @@ body.gallery-viewer-open {
   backdrop-filter: blur(10px);
 }
 
+.home-app-icon.has-image {
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.18);
+}
+
+.home-app-icon-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.18);
+}
+
+.app-rsvp.has-image {
+  background: #fff;
+}
+
+.app-account .home-app-icon-image {
+  transform: none;
+}
+
+.home-app-icon.app-rsvp .home-app-icon-image {
+  transform: scale(1.28) !important;
+}
+
 .app-invitation { background: linear-gradient(160deg, #ff9f8a, #ff6f91); }
 .app-profile { background: linear-gradient(160deg, #6dc8ff, #3b82f6); }
 .app-gallery { background: linear-gradient(160deg, #ffa24c, #ff6d4d); }
@@ -452,15 +490,60 @@ body.gallery-viewer-open {
   justify-items: center;
 }
 
+.dock-app-button {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+}
+
 .dock-button {
   display: inline-flex;
   width: 64px;
   height: 64px;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.22);
   color: #fff;
+}
+
+.dock-app-label {
+  max-width: 76px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+  white-space: nowrap;
+}
+
+.dock-button.has-image {
+  background: transparent;
+}
+
+.dock-icon-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.18);
+}
+
+.dock-button.app-account .dock-icon-image {
+  transform: none;
+}
+
+.dock-button.app-rsvp {
+  background: #fff;
+}
+
+.dock-button.app-rsvp .dock-icon-image {
+  transform: scale(1.28);
 }
 
 .opened-app-shell {
@@ -468,7 +551,7 @@ body.gallery-viewer-open {
   height: calc(100dvh - 37px);
   min-height: calc(100dvh - 37px);
   flex-direction: column;
-  padding-top: 54px;
+  padding-top: 34px;
   animation: detail-open-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -499,6 +582,14 @@ body.gallery-viewer-open {
   transform: translateX(-50%);
 }
 
+.phone-screen.is-detail-open .relock-button {
+  background: rgba(255, 255, 255, 0.78);
+  color: #171411;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 10px 22px rgba(78, 58, 45, 0.14);
+}
+
 .close-app-button {
   display: inline-flex;
   height: 34px;
@@ -521,6 +612,10 @@ body.gallery-viewer-open {
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.03em;
+}
+
+.phone-screen.is-detail-open .opened-app-title {
+  color: #171411;
 }
 
 .opened-app-body {
@@ -962,7 +1057,6 @@ body.gallery-viewer-open {
 
 .gallery-viewer-image-wrap {
   display: grid;
-  gap: 14px;
   width: min(100vw - 72px, 720px);
   max-height: calc(100dvh - 72px);
   justify-items: center;
@@ -970,7 +1064,7 @@ body.gallery-viewer-open {
 
 .gallery-viewer-image {
   width: 100%;
-  max-height: calc(100dvh - 132px);
+  max-height: calc(100dvh - 72px);
   object-fit: contain;
   border-radius: 24px;
   box-shadow: 0 26px 60px rgba(0, 0, 0, 0.34);
@@ -1011,15 +1105,6 @@ body.gallery-viewer-open {
 
 .gallery-viewer-nav.right {
   right: 18px;
-}
-
-.gallery-viewer-caption {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-align: center;
 }
 
 .soft-input {
@@ -1117,7 +1202,13 @@ body.gallery-viewer-open {
 }
 
 .info-copy ul {
-  padding-left: 1.2em;
+  list-style: disc outside;
+  padding-left: 1.3em;
+}
+
+.info-copy li::marker {
+  color: rgba(29, 25, 21, 0.72);
+  font-size: 0.8em;
 }
 
 .info-copy li + li {

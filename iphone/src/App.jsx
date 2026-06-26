@@ -53,6 +53,16 @@ const APP_ICONS = {
   rsvp: CalendarDays,
 };
 
+const APP_ICON_IMAGES = {
+  invitation: `${import.meta.env.BASE_URL}images/app-icons/invitation.png`,
+  profile: `${import.meta.env.BASE_URL}images/app-icons/profile.png`,
+  gallery: `${import.meta.env.BASE_URL}images/app-icons/gallery.png`,
+  map: `${import.meta.env.BASE_URL}images/app-icons/map.png`,
+  guestbook: `${import.meta.env.BASE_URL}images/app-icons/guestbook.png`,
+  account: `${import.meta.env.BASE_URL}images/app-icons/account.webp`,
+  rsvp: `${import.meta.env.BASE_URL}images/app-icons/rsvp.png`,
+};
+
 const APP_TITLES = {
   invitation: '초대장',
   profile: '우리 이야기',
@@ -65,13 +75,41 @@ const APP_TITLES = {
 
 function AppIcon({ appKey, label, onOpen }) {
   const Icon = APP_ICONS[appKey];
+  const iconImage = APP_ICON_IMAGES[appKey];
 
   return (
     <button type="button" className="home-app-button" onClick={() => onOpen(appKey)}>
-      <span className={`home-app-icon app-${appKey}`}>
-        <Icon size={22} strokeWidth={2.1} />
+      <span className={`home-app-icon app-${appKey} ${iconImage ? 'has-image' : ''}`}>
+        {iconImage ? (
+          <img src={iconImage} alt="" className="home-app-icon-image" />
+        ) : (
+          <Icon size={22} strokeWidth={2.1} />
+        )}
       </span>
       <span className="home-app-label">{label}</span>
+    </button>
+  );
+}
+
+function DockAppIcon({ appKey, label, onOpen }) {
+  const Icon = APP_ICONS[appKey];
+  const iconImage = APP_ICON_IMAGES[appKey];
+
+  return (
+    <button
+      type="button"
+      className="dock-app-button"
+      onClick={() => onOpen(appKey)}
+      aria-label={label}
+    >
+      <span className={`dock-button app-${appKey} ${iconImage ? 'has-image' : ''}`}>
+        {iconImage ? (
+          <img src={iconImage} alt="" className="dock-icon-image" />
+        ) : (
+          <Icon size={20} strokeWidth={2.1} />
+        )}
+      </span>
+      <span className="dock-app-label">{label}</span>
     </button>
   );
 }
@@ -255,25 +293,13 @@ function HomeScreen({ onOpen }) {
           <AppIcon appKey="invitation" label="초대장" onOpen={onOpen} />
           <AppIcon appKey="profile" label="우리 이야기" onOpen={onOpen} />
           <AppIcon appKey="gallery" label="갤러리" onOpen={onOpen} />
-          <AppIcon appKey="map" label="예식장 안내" onOpen={onOpen} />
-          <AppIcon appKey="guestbook" label="방명록" onOpen={onOpen} />
-          <AppIcon appKey="account" label="축의금" onOpen={onOpen} />
-          <AppIcon appKey="rsvp" label="참석 여부" onOpen={onOpen} />
         </div>
 
         <div className="home-dock">
-          <button type="button" className="dock-button" onClick={() => onOpen('invitation')}>
-            <Mail size={20} strokeWidth={2.1} />
-          </button>
-          <button type="button" className="dock-button" onClick={() => onOpen('gallery')}>
-            <ImageIcon size={20} strokeWidth={2.1} />
-          </button>
-          <button type="button" className="dock-button" onClick={() => onOpen('map')}>
-            <MapPinned size={20} strokeWidth={2.1} />
-          </button>
-          <button type="button" className="dock-button" onClick={() => onOpen('rsvp')}>
-            <CalendarDays size={20} strokeWidth={2.1} />
-          </button>
+          <DockAppIcon appKey="map" label="예식장 안내" onOpen={onOpen} />
+          <DockAppIcon appKey="guestbook" label="방명록" onOpen={onOpen} />
+          <DockAppIcon appKey="account" label="축의금" onOpen={onOpen} />
+          <DockAppIcon appKey="rsvp" label="참석 여부" onOpen={onOpen} />
         </div>
       </div>
     </div>
@@ -523,7 +549,6 @@ function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
           alt={activeImage.caption}
           className="gallery-viewer-image"
         />
-        <p className="gallery-viewer-caption">{activeImage.caption}</p>
       </div>
       <button
         type="button"
