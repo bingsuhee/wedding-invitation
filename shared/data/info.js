@@ -36,6 +36,7 @@ export const weddingInfo = {
     address: '서울 영등포구 문래로 164 SK리더스뷰 4층',
     lat: 37.517769,
     lng: 126.900079,
+    tmapUrl: 'tmap://search?name=JK%EC%95%84%ED%8A%B8%EC%BB%A8%EB%B2%A4%EC%85%98',
     naverUrl: 'https://naver.me/Gn0yrSdR',
     kakaoUrl:
       'https://map.kakao.com/?urlX=477916.0&urlY=1116202.0&name=JK%EC%95%84%ED%8A%B8%EC%BB%A8%EB%B2%A4%EC%85%98',

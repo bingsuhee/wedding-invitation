@@ -459,6 +459,10 @@ body.gallery-viewer-open {
   transform: none;
 }
 
+.app-profile .home-app-icon-image {
+  transform: none;
+}
+
 .home-app-icon.app-rsvp .home-app-icon-image {
   transform: scale(1.28) !important;
 }
@@ -535,6 +539,10 @@ body.gallery-viewer-open {
 }
 
 .dock-button.app-account .dock-icon-image {
+  transform: none;
+}
+
+.dock-button.app-profile .dock-icon-image {
   transform: none;
 }
 
