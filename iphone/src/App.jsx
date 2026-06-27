@@ -115,7 +115,7 @@ function DockAppIcon({ appKey, label, onOpen }) {
 }
 
 function PhoneStatus() {
-  const topLabel = `${weddingInfo.month}.${String(weddingInfo.day).padStart(2, '0')}`;
+  const topLabel = `${String(weddingInfo.hour).padStart(2, '0')}:${String(weddingInfo.minute).padStart(2, '0')}`;
 
   return (
     <div className="phone-statusbar" aria-hidden="true">
@@ -208,7 +208,7 @@ function LockScreen({ onUnlock }) {
         <div className="lock-widget-card">
           <div className="lock-widget-meta">
             <p className="lock-widget-label">Wedding invitation</p>
-            <p className="lock-widget-time">1분 전</p>
+            <p className="lock-widget-time">방금 전</p>
           </div>
           <h1>{`${weddingInfo.groom.name} ♥ ${weddingInfo.bride.name}`}</h1>
           <p className="lock-subcopy">
@@ -375,7 +375,7 @@ function ProfileScreen() {
               <p>
                 {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}의 아들
               </p>
-              <p>{weddingInfo.groom.profile.birthDate}</p>
+              <p>{weddingInfo.groom.profile.birthDate}생</p>
               <div className="tag-list">
                 {(weddingInfo.groom.introTags ?? weddingInfo.groom.profile.tags).map((tag) => (
                   <span key={tag}>{tag}</span>
@@ -398,7 +398,7 @@ function ProfileScreen() {
               <p>
                 {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}의 딸
               </p>
-              <p>{weddingInfo.bride.profile.birthDate}</p>
+              <p>{weddingInfo.bride.profile.birthDate}생</p>
               <div className="tag-list bride-tag-list">
                 {(weddingInfo.bride.introTags ?? weddingInfo.bride.profile.tags).map((tag) => (
                   <span key={tag}>{tag}</span>
