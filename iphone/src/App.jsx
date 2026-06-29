@@ -1325,6 +1325,24 @@ function App() {
     };
   }, [selectedGalleryIndex]);
 
+  useEffect(() => {
+    if (!isUnlocked) return;
+    const innerImageSrcs = [
+      toWebpSrc(INVITATION_DETAIL_IMAGE),
+      toWebpSrc(PARTY_TEAM_IMAGE),
+      toWebpSrc(GROOM_INTRO_IMAGE),
+      toWebpSrc(BRIDE_INTRO_IMAGE),
+      toWebpSrc(BRIDE_ROOM_IMAGE),
+      toWebpSrc(BANQUET_IMAGE),
+      ...weddingInfo.loveStory.slice(0, 3)
+        .filter((item) => item.image)
+        .map((item) => toWebpSrc(`${import.meta.env.BASE_URL}${item.image}`)),
+    ];
+    innerImageSrcs.forEach((src) => {
+      new Image().src = src;
+    });
+  }, [isUnlocked]);
+
   const closeViewer = () => setSelectedGalleryIndex(-1);
   const showPrevImage = () =>
     setSelectedGalleryIndex((prev) => (prev <= 0 ? galleryImages.length - 1 : prev - 1));

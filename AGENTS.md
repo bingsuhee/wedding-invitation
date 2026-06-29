@@ -55,7 +55,7 @@
 
 ## 이미지 최적화 원칙
 
-- `shared/public/images/`에 1MB 이상 이미지를 추가할 때는 다음 두 가지를 반드시 함께 적용한다.
+- `shared/public/images/`에 50KB 이상 이미지를 추가할 때는 다음 두 가지를 반드시 함께 적용한다.
   1. `npm run optimize-images`를 실행해 WebP 변환본을 `shared/public/images/webp/`에 생성하고 PNG/JPG 원본과 함께 커밋한다.
      - PNG → WebP lossless (화질 손실 없음)
      - JPEG → WebP quality 90 (JPEG 대비 30~50% 용량 절감)
