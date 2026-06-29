@@ -7,8 +7,10 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Copy,
   Heart,
   Image as ImageIcon,
+  LockKeyhole,
   Mail,
   MapPinned,
   MessageCircleMore,
@@ -25,10 +27,14 @@ import { WebpImage } from '@shared/components/WebpImage';
 import { toWebpSrc } from '@shared/lib/image';
 
 const HERO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-hero.png`;
+const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/iphone-lock-before.png`;
+const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/iphone-invitation-first.png`;
+const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/iphone-notice-widget.png`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
 const GROOM_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-groom.png`;
+const PARTY_TEAM_IMAGE = `${import.meta.env.BASE_URL}images/party-team.png`;
 const PAGE_SIZE = 10;
 const INVITATION_MESSAGE_HTML = [
   '긴 여정 끝에 최고의 파티원을 만났습니다.',
@@ -47,6 +53,16 @@ const APP_ICONS = {
   rsvp: CalendarDays,
 };
 
+const APP_ICON_IMAGES = {
+  invitation: `${import.meta.env.BASE_URL}images/app-icons/invitation.png`,
+  profile: `${import.meta.env.BASE_URL}images/app-icons/profile.png`,
+  gallery: `${import.meta.env.BASE_URL}images/app-icons/gallery.png`,
+  map: `${import.meta.env.BASE_URL}images/app-icons/map.png`,
+  guestbook: `${import.meta.env.BASE_URL}images/app-icons/guestbook.png`,
+  account: `${import.meta.env.BASE_URL}images/app-icons/account.webp`,
+  rsvp: `${import.meta.env.BASE_URL}images/app-icons/rsvp.png`,
+};
+
 const APP_TITLES = {
   invitation: '초대장',
   profile: '우리 이야기',
@@ -59,19 +75,47 @@ const APP_TITLES = {
 
 function AppIcon({ appKey, label, onOpen }) {
   const Icon = APP_ICONS[appKey];
+  const iconImage = APP_ICON_IMAGES[appKey];
 
   return (
     <button type="button" className="home-app-button" onClick={() => onOpen(appKey)}>
-      <span className={`home-app-icon app-${appKey}`}>
-        <Icon size={22} strokeWidth={2.1} />
+      <span className={`home-app-icon app-${appKey} ${iconImage ? 'has-image' : ''}`}>
+        {iconImage ? (
+          <img src={iconImage} alt="" className="home-app-icon-image" />
+        ) : (
+          <Icon size={22} strokeWidth={2.1} />
+        )}
       </span>
       <span className="home-app-label">{label}</span>
     </button>
   );
 }
 
+function DockAppIcon({ appKey, label, onOpen }) {
+  const Icon = APP_ICONS[appKey];
+  const iconImage = APP_ICON_IMAGES[appKey];
+
+  return (
+    <button
+      type="button"
+      className="dock-app-button"
+      onClick={() => onOpen(appKey)}
+      aria-label={label}
+    >
+      <span className={`dock-button app-${appKey} ${iconImage ? 'has-image' : ''}`}>
+        {iconImage ? (
+          <img src={iconImage} alt="" className="dock-icon-image" />
+        ) : (
+          <Icon size={20} strokeWidth={2.1} />
+        )}
+      </span>
+      <span className="dock-app-label">{label}</span>
+    </button>
+  );
+}
+
 function PhoneStatus() {
-  const topLabel = `${weddingInfo.month}.${String(weddingInfo.day).padStart(2, '0')}`;
+  const topLabel = `${String(weddingInfo.hour).padStart(2, '0')}:${String(weddingInfo.minute).padStart(2, '0')}`;
 
   return (
     <div className="phone-statusbar" aria-hidden="true">
@@ -164,7 +208,7 @@ function LockScreen({ onUnlock }) {
         <div className="lock-widget-card">
           <div className="lock-widget-meta">
             <p className="lock-widget-label">Wedding invitation</p>
-            <p className="lock-widget-time">1분 전</p>
+            <p className="lock-widget-time">방금 전</p>
           </div>
           <h1>{`${weddingInfo.groom.name} ♥ ${weddingInfo.bride.name}`}</h1>
           <p className="lock-subcopy">
@@ -234,7 +278,12 @@ function HomeScreen({ onOpen }) {
             <p>앱 아이콘을 눌러 상세 정보를 확인하세요</p>
           </div>
           <div className="home-widget-image-wrap" aria-hidden="true">
-            <WebpImage src={HERO_IMAGE} alt="" className="home-widget-image" fetchPriority="high" />
+            <WebpImage
+              src={NOTICE_WIDGET_IMAGE}
+              alt=""
+              className="home-widget-image"
+              fetchPriority="high"
+            />
           </div>
         </div>
       </div>
@@ -244,25 +293,13 @@ function HomeScreen({ onOpen }) {
           <AppIcon appKey="invitation" label="초대장" onOpen={onOpen} />
           <AppIcon appKey="profile" label="우리 이야기" onOpen={onOpen} />
           <AppIcon appKey="gallery" label="갤러리" onOpen={onOpen} />
-          <AppIcon appKey="map" label="예식장 안내" onOpen={onOpen} />
-          <AppIcon appKey="guestbook" label="방명록" onOpen={onOpen} />
-          <AppIcon appKey="account" label="축의금" onOpen={onOpen} />
-          <AppIcon appKey="rsvp" label="참석 여부" onOpen={onOpen} />
         </div>
 
         <div className="home-dock">
-          <button type="button" className="dock-button" onClick={() => onOpen('invitation')}>
-            <Mail size={20} strokeWidth={2.1} />
-          </button>
-          <button type="button" className="dock-button" onClick={() => onOpen('gallery')}>
-            <ImageIcon size={20} strokeWidth={2.1} />
-          </button>
-          <button type="button" className="dock-button" onClick={() => onOpen('map')}>
-            <MapPinned size={20} strokeWidth={2.1} />
-          </button>
-          <button type="button" className="dock-button" onClick={() => onOpen('rsvp')}>
-            <CalendarDays size={20} strokeWidth={2.1} />
-          </button>
+          <DockAppIcon appKey="map" label="예식장 안내" onOpen={onOpen} />
+          <DockAppIcon appKey="guestbook" label="방명록" onOpen={onOpen} />
+          <DockAppIcon appKey="account" label="축의금" onOpen={onOpen} />
+          <DockAppIcon appKey="rsvp" label="참석 여부" onOpen={onOpen} />
         </div>
       </div>
     </div>
@@ -272,16 +309,13 @@ function HomeScreen({ onOpen }) {
 function InvitationScreen() {
   const groomGivenName = weddingInfo.groom.name.slice(1);
   const brideGivenName = weddingInfo.bride.name.slice(1);
-  const invitationImage = weddingInfo.gallery[0]
-    ? `${import.meta.env.BASE_URL}${weddingInfo.gallery[0].src}`
-    : HERO_IMAGE;
 
   return (
     <div className="app-screen-content">
       <section className="screen-stack">
         <article className="ios-card hero-copy-card">
           <div className="invitation-inline-image-wrap">
-            <img src={invitationImage} alt="" className="invitation-inline-image" />
+            <WebpImage src={INVITATION_DETAIL_IMAGE} alt="" className="invitation-inline-image" />
           </div>
           <h3 className="hero-main-copy">
             <span className="hero-main-copy-line">
@@ -298,6 +332,9 @@ function InvitationScreen() {
         </article>
 
         <article className="ios-card text-card">
+          <div className="party-inline-image-wrap">
+            <img src={PARTY_TEAM_IMAGE} alt="" className="party-inline-image" />
+          </div>
           <p className="party-copy-label">파티 모집 완료! 이제부터 같은 팀입니다.</p>
           <div className="message-stack">
             {INVITATION_MESSAGE_HTML.map((line, index) => (
@@ -338,7 +375,7 @@ function ProfileScreen() {
               <p>
                 {weddingInfo.groom.father.name}, {weddingInfo.groom.mother.name}의 아들
               </p>
-              <p>{weddingInfo.groom.profile.birthDate}</p>
+              <p>{weddingInfo.groom.profile.birthDate}생</p>
               <div className="tag-list">
                 {(weddingInfo.groom.introTags ?? weddingInfo.groom.profile.tags).map((tag) => (
                   <span key={tag}>{tag}</span>
@@ -348,6 +385,11 @@ function ProfileScreen() {
           </article>
 
           <article className="ios-card profile-card compact profile-card-bride">
+            <WebpImage
+              src={BRIDE_INTRO_IMAGE}
+              alt={`신부 ${weddingInfo.bride.name}`}
+              className="profile-image"
+            />
             <div className="profile-copy">
               <p className="profile-heading">
                 <span className="profile-role">신부</span>
@@ -356,18 +398,13 @@ function ProfileScreen() {
               <p>
                 {weddingInfo.bride.father.name}, {weddingInfo.bride.mother.name}의 딸
               </p>
-              <p>{weddingInfo.bride.profile.birthDate}</p>
+              <p>{weddingInfo.bride.profile.birthDate}생</p>
               <div className="tag-list bride-tag-list">
                 {(weddingInfo.bride.introTags ?? weddingInfo.bride.profile.tags).map((tag) => (
                   <span key={tag}>{tag}</span>
                 ))}
               </div>
             </div>
-            <WebpImage
-              src={BRIDE_INTRO_IMAGE}
-              alt={`신부 ${weddingInfo.bride.name}`}
-              className="profile-image"
-            />
           </article>
         </div>
 
@@ -512,7 +549,6 @@ function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
           alt={activeImage.caption}
           className="gallery-viewer-image"
         />
-        <p className="gallery-viewer-caption">{activeImage.caption}</p>
       </div>
       <button
         type="button"
@@ -570,10 +606,6 @@ function MapScreen() {
               </>
             )}
           </div>
-          <div className="venue-copy">
-            <p className="venue-name">{weddingInfo.location.name}</p>
-            <p className="venue-address">{weddingInfo.location.address}</p>
-          </div>
         </article>
       </section>
     </div>
@@ -585,10 +617,12 @@ function GuestbookScreen() {
   const [name, setName] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const [guestbookToast, setGuestbookToast] = useState('');
   const [fetching, setFetching] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [fetchedOffset, setFetchedOffset] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const canSubmitGuestbook = name.trim().length > 0 && content.trim().length > 0;
 
   useEffect(() => {
     const fetchMessages = async (offset, append) => {
@@ -642,7 +676,7 @@ function GuestbookScreen() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!name.trim() || !content.trim()) return;
+    if (!canSubmitGuestbook) return;
 
     setLoading(true);
     try {
@@ -663,7 +697,10 @@ function GuestbookScreen() {
       setContent('');
     } catch (error) {
       console.error('Error adding message:', error.message);
-      window.alert('메시지 작성에 실패했습니다.');
+      setGuestbookToast('메시지 작성에 실패했습니다.');
+      window.setTimeout(() => {
+        setGuestbookToast('');
+      }, 1800);
     } finally {
       setLoading(false);
     }
@@ -674,24 +711,44 @@ function GuestbookScreen() {
   return (
     <div className="app-screen-content">
       <section className="screen-stack">
+        <article className="ios-card text-card">
+          <p className="message-block small">
+            함께해 주시는 마음을 짧은 글로 남겨주시면
+            <br />
+            오래도록 소중하게 간직하겠습니다.
+          </p>
+        </article>
+
         <article className="ios-card guestbook-card">
           <form onSubmit={handleSubmit} className="guestbook-form-card">
-            <input
-              type="text"
-              placeholder="이름"
-              className="guestbook-input"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              required
-            />
-            <textarea
-              placeholder="축하 메시지를 남겨주세요"
-              className="guestbook-input textarea"
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              required
-            />
-            <button type="submit" disabled={loading} className="guestbook-submit-button">
+            <div className="guestbook-form-section">
+              <p className="attendance-label">이름 <span>*</span></p>
+              <input
+                type="text"
+                placeholder="이름"
+                className="guestbook-input"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                required
+              />
+            </div>
+
+            <div className="guestbook-form-section">
+              <p className="attendance-label">축하 메시지 <span>*</span></p>
+              <textarea
+                placeholder="축하 메시지를 남겨주세요"
+                className="guestbook-input textarea"
+                value={content}
+                onChange={(event) => setContent(event.target.value)}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !canSubmitGuestbook}
+              className="guestbook-submit-button"
+            >
               <Send size={16} />
               {loading ? '보내는 중...' : '축하 메시지 보내기'}
             </button>
@@ -744,13 +801,18 @@ function GuestbookScreen() {
 
 function AccountContent({ title, people }) {
   const [copiedAccount, setCopiedAccount] = useState('');
+  const [showCopyToast, setShowCopyToast] = useState(false);
 
   const handleCopyAccount = async (account) => {
     try {
       await navigator.clipboard.writeText(account);
       setCopiedAccount(account);
+      setShowCopyToast(true);
       window.setTimeout(() => {
         setCopiedAccount((current) => (current === account ? '' : current));
+      }, 1800);
+      window.setTimeout(() => {
+        setShowCopyToast(false);
       }, 1800);
     } catch (error) {
       window.alert('계좌번호 복사에 실패했습니다. 잠시 후 다시 시도해 주세요.');
@@ -775,12 +837,18 @@ function AccountContent({ title, people }) {
               type="button"
               className="copy-button"
               onClick={() => handleCopyAccount(person.account)}
+              aria-label={`${person.name} 계좌번호 복사`}
             >
-              {copiedAccount === person.account ? '복사됨' : '복사'}
+              {copiedAccount === person.account ? <Check size={16} /> : <Copy size={16} />}
             </button>
           </div>
         ))}
       </div>
+      {showCopyToast ? (
+        <div className="copy-toast" role="status" aria-live="polite">
+          계좌번호가 클립보드에 복사되었습니다.
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -1064,6 +1132,143 @@ function MapScreenEnhanced() {
   );
 }
 
+function MapScreenLegacy() {
+  const [infoTab, setInfoTab] = useState('bride-room');
+  const infoImage = infoTab === 'bride-room' ? BRIDE_ROOM_IMAGE : BANQUET_IMAGE;
+
+  return (
+    <div className="app-screen-content iphone-map-screen">
+      <section className="screen-stack">
+        <div className="map-embedded-card">
+          <Map />
+        </div>
+        <article className="ios-card">
+          <div className="segmented-tabs" role="tablist" aria-label="예식장 안내">
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'bride-room' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('bride-room')}
+            >
+              신부대기실
+            </button>
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'banquet' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('banquet')}
+            >
+              피로연장
+            </button>
+          </div>
+          <WebpImage src={infoImage} alt="" className="info-photo" />
+          <div className="info-copy">
+            {infoTab === 'bride-room' ? (
+              <>
+                <p>
+                  <strong>신부대기실은 옆 계단으로 올라오셔야 합니다.</strong>
+                </p>
+                <p>
+                  계단을 이용하시기 어려우신 분들은
+                  <br />
+                  직원 안내에 따라 엘리베이터로 올라오실 수 있어요.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  연회장은 예식장 바로 옆에 위치하고 있습니다.
+                  <br />
+                  연회장은 예식 30분 전부터 이용 가능합니다.
+                </p>
+                <p>180여 가지의 뷔페식이고, 음주류도 있으니 맘껏 즐겨주세요.</p>
+                <p>
+                  <strong>특히 이 메뉴는 놓치지 마세요!</strong>
+                </p>
+                <ul>
+                  <li>LA 갈비를 포함한 모든 고기 메뉴</li>
+                  <li>전복갈비탕, 설렁탕, 도가니탕</li>
+                  <li>육회는 꼭 노른자를 곁들여서</li>
+                  <li>파스타는 바로 만들어서 신선</li>
+                  <li>젤라또는 와플이랑 같이</li>
+                  <li>사케 + 냉면 꿀조합 / 와인은 반반 믹스 추천</li>
+                </ul>
+              </>
+            )}
+          </div>
+        </article>
+
+      </section>
+    </div>
+  );
+}
+
+function MapScreenEnhancedLegacy() {
+  const [infoTab, setInfoTab] = useState('bride-room');
+  const infoImage = infoTab === 'bride-room' ? BRIDE_ROOM_IMAGE : BANQUET_IMAGE;
+
+  return (
+    <div className="app-screen-content iphone-map-screen">
+      <section className="screen-stack">
+        <div className="map-embedded-card">
+          <Map />
+        </div>
+        <article className="ios-card">
+          <div className="segmented-tabs" role="tablist" aria-label="예식장 안내">
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'bride-room' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('bride-room')}
+            >
+              신부대기실
+            </button>
+            <button
+              type="button"
+              className={`segment-button ${infoTab === 'banquet' ? 'is-active' : ''}`}
+              onClick={() => setInfoTab('banquet')}
+            >
+              피로연장
+            </button>
+          </div>
+          <WebpImage src={infoImage} alt="" className="info-photo" />
+          <div className="info-copy">
+            {infoTab === 'bride-room' ? (
+              <>
+                <p>
+                  <strong>신부대기실은 옆 계단으로 올라오셔야 합니다.</strong>
+                </p>
+                <p>
+                  계단을 이용하시기 어려우신 분들은
+                  <br />
+                  직원 안내에 따라 엘리베이터로 올라오실 수 있어요.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  연회장은 예식장 바로 옆에 위치하고 있습니다.
+                  <br />
+                  연회장은 예식 30분 전부터 이용 가능합니다.
+                </p>
+                <p>180여 가지의 뷔페식이고, 음주류도 있으니 맘껏 즐겨주세요.</p>
+                <p>
+                  <strong>특히 이 메뉴는 놓치지 마세요!</strong>
+                </p>
+                <ul>
+                  <li>LA 갈비를 포함한 모든 고기 메뉴</li>
+                  <li>전복갈비탕, 설렁탕, 도가니탕</li>
+                  <li>육회는 꼭 노른자를 곁들여서</li>
+                  <li>파스타는 바로 만들어서 신선</li>
+                  <li>젤라또는 와플이랑 같이</li>
+                  <li>사케 + 냉면 꿀조합 / 와인은 반반 믹스 추천</li>
+                </ul>
+              </>
+            )}
+          </div>
+        </article>
+      </section>
+    </div>
+  );
+}
+
 function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
@@ -1072,6 +1277,7 @@ function App() {
   const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
+  const screenBackgroundImage = toWebpSrc(!isUnlocked ? LOCK_SCREEN_IMAGE : HERO_IMAGE);
 
   useEffect(() => {
     document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
@@ -1124,12 +1330,17 @@ function App() {
     setSelectedGalleryIndex((prev) => (prev <= 0 ? galleryImages.length - 1 : prev - 1));
   const showNextImage = () =>
     setSelectedGalleryIndex((prev) => (prev >= galleryImages.length - 1 ? 0 : prev + 1));
+  const relockToStart = () => {
+    setSelectedGalleryIndex(-1);
+    setActiveApp('');
+    setIsUnlocked(false);
+  };
 
   const appContent = {
     invitation: <InvitationScreen />,
     profile: <ProfileScreen />,
     gallery: <GalleryScreen onOpenViewer={setSelectedGalleryIndex} />,
-    map: <MapScreen />,
+    map: <MapScreenLegacy />,
     guestbook: <GuestbookScreen />,
     account: <AccountScreen />,
     rsvp: <AttendanceScreen />,
@@ -1140,10 +1351,20 @@ function App() {
       <main
         className={`phone-screen mobile-phone-screen is-stage-${currentStage} ${activeApp ? 'is-detail-open' : ''}`}
         style={{
-          backgroundImage: `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${toWebpSrc(HERO_IMAGE)})`,
+          backgroundImage: `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${screenBackgroundImage})`,
         }}
       >
         <PhoneStatus />
+        {isUnlocked && selectedGalleryIndex < 0 ? (
+          <button
+            type="button"
+            className="relock-button"
+            onClick={relockToStart}
+            aria-label="잠금화면으로 돌아가기"
+          >
+            <LockKeyhole size={16} strokeWidth={2.2} />
+          </button>
+        ) : null}
 
         {!isUnlocked ? (
           <div className="stage-panel stage-panel-lock" key="lock">
