@@ -7,7 +7,7 @@ export const weddingInfo = {
     },
     father: { name: '박경수', account: '국민은행 307-24-0098-205' },
     mother: { name: '신정미', account: '국민은행 244-21-0168-888' },
-    account: '우리은행 1002-660-627618',
+    account: '농협은행 302-1327-4498-81',
     contact: '010-1234-5678',
     introTags: ['#강하늘닮은꼴', '#어쩌면김동률', '#빙수'],
   },
