@@ -2,7 +2,7 @@ name: Supabase Keep Alive
 
 on:
   schedule:
-    - cron: '0 0 */6 * *'  # 6일마다 자정(UTC) 실행
+    - cron: '0 0 */2 * *'  # 6일마다 자정(UTC) 실행
   workflow_dispatch:        # 수동 실행도 가능
 
 jobs:
