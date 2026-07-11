@@ -17,7 +17,7 @@ export const weddingInfo = {
       birthDate: '1994년 10월 31일',
       tags: ['#ISTP', '#얼굴은얄라리', '#성격은박명수', '#땃지'],
     },
-    father: { name: '김종범', account: '농협은행 211-0595-1090-781' },
+    father: { name: '김종범', account: '농협은행 211-059-51-090781' },
     mother: { name: '송해란', account: '기업은행 399-074852-01-015' },
     account: '우리은행 1002-348-338173',
     contact: '010-5678-1234',
