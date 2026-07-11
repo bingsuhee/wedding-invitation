@@ -26,10 +26,10 @@ import { weddingInfo } from '@shared/data/info';
 import { WebpImage } from '@shared/components/WebpImage';
 import { toWebpSrc } from '@shared/lib/image';
 
-const HERO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-hero.png`;
-const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/iphone-lock-before.png`;
-const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/iphone-invitation-first.png`;
-const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/iphone-notice-widget.png`;
+const HERO_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g08.jpeg`;
+const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g09.jpeg`;
+const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g20.jpeg`;
+const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g34.jpeg`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/cookierun-bride.png`;
@@ -436,7 +436,7 @@ function ProfileScreen() {
 }
 
 function GalleryScreen({ onOpenViewer }) {
-  const images = weddingInfo.gallery.slice(0, 12);
+  const images = weddingInfo.gallery;
 
   return (
     <div className="app-screen-content">
@@ -1273,7 +1273,7 @@ function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
   const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(-1);
-  const galleryImages = useMemo(() => weddingInfo.gallery.slice(0, 12), []);
+  const galleryImages = useMemo(() => weddingInfo.gallery, []);
   const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
