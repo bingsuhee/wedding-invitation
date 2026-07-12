@@ -249,14 +249,14 @@ function HomeScreen({ onOpen }) {
       ),
     []
   );
-  const [remainingDaysText, setRemainingDaysText] = useState('000');
+  const [remainingDaysText, setRemainingDaysText] = useState('0');
 
   useEffect(() => {
     const updateRemainingDays = () => {
       const now = new Date();
       const diffMs = Math.max(0, ceremonyDate.getTime() - now.getTime());
       const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      setRemainingDaysText(String(days).padStart(3, '0'));
+      setRemainingDaysText(String(days));
     };
 
     updateRemainingDays();
@@ -1280,9 +1280,12 @@ function App() {
   const screenBackgroundImage = toWebpSrc(!isUnlocked ? LOCK_SCREEN_IMAGE : HERO_IMAGE);
 
   useEffect(() => {
-    document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
+    const shareTitle = `${weddingInfo.groom.name.slice(1)}이와 ${weddingInfo.bride.name.slice(1)}의 결혼식에 초대드립니다.`;
+    const shareDescription = `${weddingInfo.dateLabel} ${weddingInfo.timeLabel} ${weddingInfo.location.name}`;
+    const shareImage = new URL(LOCK_SCREEN_IMAGE, window.location.href).href;
+    const shareUrl = new URL('.', window.location.href).href;
 
-    const description = `${weddingInfo.dateLabel} ${weddingInfo.timeLabel}, ${weddingInfo.location.name}`;
+    document.title = shareTitle;
 
     const updateMeta = (name, content, property = false) => {
       const selector = property ? `meta[property="${name}"]` : `meta[name="${name}"]`;
@@ -1298,11 +1301,14 @@ function App() {
       element.setAttribute('content', content);
     };
 
-    updateMeta('description', description);
-    updateMeta('og:title', document.title, true);
-    updateMeta('og:description', description, true);
-    updateMeta('twitter:title', document.title);
-    updateMeta('twitter:description', description);
+    updateMeta('description', shareDescription);
+    updateMeta('og:title', shareTitle, true);
+    updateMeta('og:description', shareDescription, true);
+    updateMeta('og:image', shareImage, true);
+    updateMeta('og:url', shareUrl, true);
+    updateMeta('twitter:title', shareTitle);
+    updateMeta('twitter:description', shareDescription);
+    updateMeta('twitter:image', shareImage);
   }, []);
 
   useEffect(() => {

@@ -369,6 +369,7 @@ body.gallery-viewer-open {
 .home-widget-card h2 {
   margin: 6px 0 0;
   font-size: 22px;
+  font-weight: 500;
   line-height: 1.26;
   letter-spacing: -0.05em;
 }
