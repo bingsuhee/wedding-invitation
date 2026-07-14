@@ -2,7 +2,7 @@ name: Supabase Keep Alive
 
 on:
   schedule:
-    - cron: '0 0 */2 * *'  # 6일마다 자정(UTC) 실행
+    - cron: '0 0 */2 * *'  # 2일마다 자정(UTC) 실행
   workflow_dispatch:        # 수동 실행도 가능
 
 jobs:
@@ -11,12 +11,30 @@ jobs:
     steps:
       - name: Ping Supabase
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/rsvp?select=id&limit=1" \
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/keep_alive_ping" \
+            -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d '{}')
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n1)
+          echo "Insert status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "201" ]; then
+            echo "Insert failed: $BODY"
+            exit 1
+          fi
+          ROW_ID=$(echo "$BODY" | grep -o '"id":[0-9]*' | grep -o '[0-9]*')
+          echo "Inserted id: $ROW_ID"
+          DEL_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X DELETE \
+            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/keep_alive_ping?id=eq.${ROW_ID}" \
             -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.VITE_SUPABASE_ANON_KEY }}")
-          echo "Response status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "Unexpected status code: $STATUS"
+          echo "Delete status: $DEL_STATUS"
+          if [ "$DEL_STATUS" != "204" ]; then
+            echo "Delete failed with status: $DEL_STATUS"
             exit 1
           fi
