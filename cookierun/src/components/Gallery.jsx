@@ -65,6 +65,10 @@ const Gallery = () => {
             bgClickAction: 'close',
             tapAction: 'close',
             secondaryClickAction: 'close',
+            zoom: false,
+            maxZoomLevel: 1,
+            secondaryZoomLevel: 1,
+            pinchToClose: false,
           }}
         >
           <div className="grid grid-cols-2 gap-4">

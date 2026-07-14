@@ -466,7 +466,18 @@ function GalleryScreen({ onOpenViewer }) {
 function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
   const touchStartXRef = useRef(0);
   const touchEndXRef = useRef(0);
+  const overlayRef = useRef(null);
   const activeImage = images[selectedIndex];
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay) return;
+    const preventPinch = (e) => {
+      if (e.touches.length > 1) e.preventDefault();
+    };
+    overlay.addEventListener('touchmove', preventPinch, { passive: false });
+    return () => overlay.removeEventListener('touchmove', preventPinch);
+  }, []);
 
   useEffect(() => {
     if (selectedIndex < 0) {
@@ -513,6 +524,7 @@ function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
 
   return (
     <div
+      ref={overlayRef}
       className="gallery-viewer-overlay"
       role="dialog"
       aria-modal="true"

@@ -1084,6 +1084,7 @@ body.gallery-viewer-open {
   background: rgba(0, 0, 0, 0.84);
   backdrop-filter: blur(8px);
   animation: gallery-viewer-fade-in 0.24s ease;
+  touch-action: none;
 }
 
 .gallery-viewer-image-wrap {
