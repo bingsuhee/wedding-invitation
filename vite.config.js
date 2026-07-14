@@ -9,11 +9,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const concept = process.env.CONCEPT || 'classic'
 const siteBaseUrl = (process.env.VITE_SITE_URL || 'https://bingsuhee.github.io/wedding-invitation').replace(/\/$/, '')
 const sharePageUrl = `${siteBaseUrl}/${concept}/`
+const shareImage = weddingInfo.gallery.find(({ src }) => src === 'images/gallery/g11.jpeg') ?? weddingInfo.gallery[0]
 
 const shareMeta = {
   title: `${weddingInfo.groom.name.slice(1)}이와 ${weddingInfo.bride.name.slice(1)}의 결혼식에 초대드립니다.`,
   description: `${weddingInfo.dateLabel} ${weddingInfo.timeLabel} ${weddingInfo.location.name}`,
-  image: `${sharePageUrl}${weddingInfo.gallery[8].src}`,
+  image: `${sharePageUrl}${shareImage.src}`,
   url: sharePageUrl,
 }
 
