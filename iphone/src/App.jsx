@@ -466,6 +466,7 @@ function GalleryScreen({ onOpenViewer }) {
 function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
   const touchStartXRef = useRef(0);
   const touchEndXRef = useRef(0);
+  const isMultiTouchRef = useRef(false);
   const overlayRef = useRef(null);
   const activeImage = images[selectedIndex];
 
@@ -503,18 +504,25 @@ function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
   }
 
   const handleTouchStart = (event) => {
-    touchStartXRef.current = event.changedTouches[0]?.clientX ?? 0;
+    touchStartXRef.current = event.touches[0]?.clientX ?? 0;
     touchEndXRef.current = touchStartXRef.current;
+    isMultiTouchRef.current = event.touches.length > 1;
+  };
+
+  const handleTouchMove = (event) => {
+    if (event.touches.length > 1) {
+      isMultiTouchRef.current = true;
+    }
   };
 
   const handleTouchEnd = (event) => {
-    touchEndXRef.current = event.changedTouches[0]?.clientX ?? touchStartXRef.current;
-    const deltaX = touchEndXRef.current - touchStartXRef.current;
-
-    if (Math.abs(deltaX) < 48) {
+    if (isMultiTouchRef.current) {
+      isMultiTouchRef.current = false;
       return;
     }
-
+    touchEndXRef.current = event.changedTouches[0]?.clientX ?? touchStartXRef.current;
+    const deltaX = touchEndXRef.current - touchStartXRef.current;
+    if (Math.abs(deltaX) < 48) return;
     if (deltaX > 0) {
       onPrev();
     } else {
@@ -554,6 +562,7 @@ function GalleryViewer({ images, selectedIndex, onClose, onPrev, onNext }) {
         className="gallery-viewer-image-wrap"
         onClick={(event) => event.stopPropagation()}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <WebpImage
