@@ -26,10 +26,10 @@ import { weddingInfo } from '@shared/data/info';
 import { WebpImage } from '@shared/components/WebpImage';
 import { toWebpSrc } from '@shared/lib/image';
 
-const HERO_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g10.jpeg`;
-const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g11.jpeg`;
-const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g24.jpeg`;
-const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g42.jpeg`;
+const HERO_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g08.jpeg`;
+const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g09.jpeg`;
+const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g23.jpeg`;
+const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g45.jpeg`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/iphone-bride-profile.png`;
