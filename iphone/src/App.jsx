@@ -1302,6 +1302,10 @@ function App() {
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
   const ActiveAppIcon = activeApp ? APP_ICONS[activeApp] : Mail;
   const screenBackgroundImage = toWebpSrc(!isUnlocked ? LOCK_SCREEN_IMAGE : HERO_IMAGE);
+  const backgroundEffect = isUnlocked ? 'current' : 'light';
+  const backgroundImage = !isUnlocked
+    ? `linear-gradient(180deg, rgba(11, 19, 28, 0.02), rgba(11, 19, 28, 0.16)), url(${screenBackgroundImage})`
+    : `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${screenBackgroundImage})`;
 
   useEffect(() => {
     const shareTitle = `${weddingInfo.groom.name.slice(1)}이와 ${weddingInfo.bride.name.slice(1)}의 결혼식에 초대드립니다.`;
@@ -1397,10 +1401,8 @@ function App() {
   return (
     <div className="iphone-page-shell">
       <main
-        className={`phone-screen mobile-phone-screen is-stage-${currentStage} ${activeApp ? 'is-detail-open' : ''}`}
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(11, 19, 28, 0.08), rgba(11, 19, 28, 0.42)), url(${screenBackgroundImage})`,
-        }}
+        className={`phone-screen mobile-phone-screen is-stage-${currentStage} background-effect-${backgroundEffect} ${activeApp ? 'is-detail-open' : ''}`}
+        style={{ backgroundImage }}
       >
         <PhoneStatus />
         {isUnlocked && selectedGalleryIndex < 0 ? (
