@@ -109,6 +109,12 @@ body.gallery-viewer-open {
   pointer-events: none;
 }
 
+.phone-screen.background-effect-light::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 24%),
+    linear-gradient(180deg, transparent 68%, rgba(6, 10, 16, 0.1));
+}
+
 .phone-screen.is-detail-open::before {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.24) 18%, transparent 32%),
