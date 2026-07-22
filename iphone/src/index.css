@@ -276,7 +276,7 @@ body.gallery-viewer-open {
 .lock-widget-label {
   margin: 0 0 8px;
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -284,20 +284,20 @@ body.gallery-viewer-open {
 .lock-widget-time {
   margin: 0 0 8px;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .lock-widget-card h1 {
   color: #fff !important;
-  font-size: 16px;
+  font-size: 19px;
   line-height: 1.3;
 }
 
 .lock-subcopy {
   margin: 10px 0 0;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   line-height: 1.62;
   color: #fff;
@@ -332,7 +332,7 @@ body.gallery-viewer-open {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
   text-shadow: 0 8px 22px rgba(0, 0, 0, 0.24);
 }
@@ -390,6 +390,11 @@ body.gallery-viewer-open {
   font-size: 13px;
   line-height: 1.6;
   opacity: 0.92;
+}
+
+.home-widget-card .home-widget-label,
+.home-widget-card .home-widget-description {
+  font-size: 15px;
 }
 
 .home-widget-image-wrap {

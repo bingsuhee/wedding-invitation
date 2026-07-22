@@ -215,7 +215,7 @@ function LockScreen({ onUnlock }) {
           <p className="lock-subcopy">
             수빈이와 소희의 결혼식에 초대드립니다.
             <br />
-            2026년 10월 11일 오후 12시 JK아트컨벤션 아트리움홀
+            {`${weddingInfo.dateLabel.replace(/^\d{4}년\s*/, '')} ${weddingInfo.timeLabel} ${weddingInfo.location.name}`}
           </p>
         </div>
 
@@ -276,7 +276,7 @@ function HomeScreen({ onOpen }) {
               <br />
               {remainingDaysText}일 남았습니다.
             </h2>
-            <p>앱 아이콘을 눌러 상세 정보를 확인하세요</p>
+            <p className="home-widget-description">앱 아이콘을 눌러 정보를 확인하세요</p>
           </div>
           <div className="home-widget-image-wrap" aria-hidden="true">
             <WebpImage
