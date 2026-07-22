@@ -30,6 +30,7 @@ const HERO_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g04.jpeg`;
 const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g05.jpeg`;
 const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g13.jpeg`;
 const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g27.jpeg`;
+const OG_IMAGE = `${import.meta.env.BASE_URL}images/og-cover.png`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/iphone-bride-profile.png`;
@@ -1310,7 +1311,7 @@ function App() {
   useEffect(() => {
     const shareTitle = `${weddingInfo.groom.name.slice(1)}이와 ${weddingInfo.bride.name.slice(1)}의 결혼식에 초대드립니다.`;
     const shareDescription = `${weddingInfo.dateLabel} ${weddingInfo.timeLabel} ${weddingInfo.location.name}`;
-    const shareImage = new URL(LOCK_SCREEN_IMAGE, window.location.href).href;
+    const shareImage = new URL(OG_IMAGE, window.location.href).href;
     const shareUrl = new URL('.', window.location.href).href;
 
     document.title = shareTitle;
