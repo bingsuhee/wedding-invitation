@@ -258,6 +258,17 @@ function App() {
   const galleryImages = weddingInfo.gallery;
 
   useEffect(() => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(import.meta.env.VITE_KAKAO_MAP_KEY);
+    }
+  }, []);
+
+  const handleKakaoShare = () => {
+    if (!window.Kakao?.Share) return;
+    window.Kakao.Share.sendCustom({ templateId: 135552 });
+  };
+
+  useEffect(() => {
     document.title = `${weddingInfo.groom.name} and ${weddingInfo.bride.name} | Wedding Invitation`;
 
     const description = `${weddingInfo.dateLabel} ${weddingInfo.timeLabel}, ${weddingInfo.location.name}`;
@@ -694,13 +705,24 @@ function App() {
                 <br />
                 두 사람의 시작을 축복해 주세요.
               </p>
-              <div className="mt-6 flex justify-center">
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <button
                   type="button"
                   onClick={() => setAttendanceModalOpen(true)}
                   className="soft-card-strong rounded-full px-7 py-3 text-[15px] font-medium tracking-[-0.03em] text-black transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(35,28,20,0.12)]"
                 >
                   참석 의사 전달
+                </button>
+                <button
+                  type="button"
+                  onClick={handleKakaoShare}
+                  className="flex items-center gap-2 rounded-full px-7 py-3 text-[15px] font-medium tracking-[-0.03em] text-[#3c1e1e] transition duration-300 hover:-translate-y-0.5"
+                  style={{ backgroundColor: '#FEE500' }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M9 1.5C4.858 1.5 1.5 4.19 1.5 7.5c0 2.07 1.243 3.895 3.128 5.01l-.796 2.97a.28.28 0 0 0 .432.302L7.43 13.63C7.946 13.71 8.47 13.75 9 13.75c4.142 0 7.5-2.686 7.5-6s-3.358-6.25-7.5-6.25z" fill="#3C1E1E"/>
+                  </svg>
+                  카카오톡 공유
                 </button>
               </div>
             </section>
