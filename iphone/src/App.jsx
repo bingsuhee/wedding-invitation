@@ -30,6 +30,7 @@ const HERO_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g04.jpeg`;
 const LOCK_SCREEN_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g05.jpeg`;
 const INVITATION_DETAIL_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g13.jpeg`;
 const NOTICE_WIDGET_IMAGE = `${import.meta.env.BASE_URL}images/gallery/g27.jpeg`;
+const OG_IMAGE = `${import.meta.env.BASE_URL}images/og-cover.png`;
 const BRIDE_ROOM_IMAGE = `${import.meta.env.BASE_URL}images/bride-room.jpg`;
 const BANQUET_IMAGE = `${import.meta.env.BASE_URL}images/banquet-hall.jpg`;
 const BRIDE_INTRO_IMAGE = `${import.meta.env.BASE_URL}images/iphone-bride-profile.png`;
@@ -214,7 +215,7 @@ function LockScreen({ onUnlock }) {
           <p className="lock-subcopy">
             수빈이와 소희의 결혼식에 초대드립니다.
             <br />
-            2026년 10월 11일 오후 12시 JK아트컨벤션 아트리움홀
+            {`${weddingInfo.dateLabel.replace(/^\d{4}년\s*/, '')} ${weddingInfo.timeLabel} ${weddingInfo.location.name}`}
           </p>
         </div>
 
@@ -275,7 +276,7 @@ function HomeScreen({ onOpen }) {
               <br />
               {remainingDaysText}일 남았습니다.
             </h2>
-            <p>앱 아이콘을 눌러 상세 정보를 확인하세요</p>
+            <p className="home-widget-description">앱 아이콘을 눌러 정보를 확인하세요</p>
           </div>
           <div className="home-widget-image-wrap" aria-hidden="true">
             <WebpImage
@@ -1310,7 +1311,7 @@ function App() {
   useEffect(() => {
     const shareTitle = `${weddingInfo.groom.name.slice(1)}이와 ${weddingInfo.bride.name.slice(1)}의 결혼식에 초대드립니다.`;
     const shareDescription = `${weddingInfo.dateLabel} ${weddingInfo.timeLabel} ${weddingInfo.location.name}`;
-    const shareImage = new URL(LOCK_SCREEN_IMAGE, window.location.href).href;
+    const shareImage = new URL(OG_IMAGE, window.location.href).href;
     const shareUrl = new URL('.', window.location.href).href;
 
     document.title = shareTitle;
