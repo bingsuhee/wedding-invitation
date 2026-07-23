@@ -1096,26 +1096,25 @@ body.gallery-viewer-open {
 .gallery-viewer-image-wrap {
   position: absolute;
   inset: 0;
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100vw;
   height: 100dvh;
-  place-items: center;
   overflow: hidden;
   background: #000;
 }
 
 .gallery-viewer-image-wrap picture {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  place-items: center;
+  display: contents;
 }
 
 .gallery-viewer-image {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  max-width: 100vw;
+  max-height: 100dvh;
+  width: auto;
+  height: auto;
   border-radius: 0;
   box-shadow: none;
 }
