@@ -196,7 +196,14 @@ function LockScreen({ onUnlock }) {
   };
 
   return (
-    <div className="lock-screen">
+    <div
+      className="lock-screen"
+      onPointerDown={handlePointerDown}
+      onTouchStart={handleTouchStart}
+      role="button"
+      tabIndex={0}
+      aria-label="스와이프해 잠금 해제"
+    >
       <div className="lock-screen-copy">
         <p className="lock-date">{lockDateLabel}</p>
         <p className="lock-time">{lockTimeLabel}</p>
@@ -219,19 +226,13 @@ function LockScreen({ onUnlock }) {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="swipe-unlock"
-          onPointerDown={handlePointerDown}
-          onTouchStart={handleTouchStart}
-          aria-label="위로 스와이프해 잠금 해제"
-        >
+        <div className="swipe-unlock">
           <span className="swipe-unlock-pill" />
           <span className="swipe-unlock-text">
             <ChevronUp size={16} />
             위로 스와이프
           </span>
-        </button>
+        </div>
       </div>
     </div>
   );
@@ -1298,6 +1299,9 @@ function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [activeApp, setActiveApp] = useState('');
   const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(-1);
+  const activeAppRef = useRef('');
+  const prevActiveAppRef = useRef('');
+  const isPoppingAppRef = useRef(false);
   const galleryImages = useMemo(() => weddingInfo.gallery, []);
   const currentStage = !isUnlocked ? 'lock' : activeApp ? 'detail' : 'home';
   const activeAppTitle = activeApp ? APP_TITLES[activeApp] : '';
@@ -1359,6 +1363,32 @@ function App() {
       document.documentElement.classList.remove('gallery-viewer-open');
     };
   }, [selectedGalleryIndex]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (activeAppRef.current) {
+        isPoppingAppRef.current = true;
+        setActiveApp('');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    activeAppRef.current = activeApp;
+    const prevActiveApp = prevActiveAppRef.current;
+
+    if (activeApp && !prevActiveApp) {
+      window.history.pushState({ iphoneModal: true }, '');
+    } else if (!activeApp && prevActiveApp && !isPoppingAppRef.current) {
+      window.history.back();
+    }
+
+    isPoppingAppRef.current = false;
+    prevActiveAppRef.current = activeApp;
+  }, [activeApp]);
 
   useEffect(() => {
     if (!isUnlocked) return;
